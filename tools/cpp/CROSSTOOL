@@ -315,8 +315,6 @@ toolchain {
   linker_flag: "-Lexternal/gcc_linaro_arm_linux_gnueabihf_raspbian_repo/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/arm-linux-gnueabihf/libc/usr/lib"
   linker_flag: "-Bexternal/gcc_linaro_arm_linux_gnueabihf_raspbian_repo/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/arm-linux-gnueabihf/bin"
 
-  compiler_flag: "-DUAS_AT_UCLA_DEPLOYMENT"
-
   feature {
     name: "opt"
     implies: "all_modes"
@@ -327,9 +325,6 @@ toolchain {
       action: "c++-header-parsing"
       action: "c++-header-preprocessing"
       action: "c++-module-compile"
-      flag_group {
-        flag: "-DAOS_DEBUG=0"
-      }
     }
   }
 
@@ -343,9 +338,6 @@ toolchain {
       action: "c++-header-parsing"
       action: "c++-header-preprocessing"
       action: "c++-module-compile"
-      flag_group {
-        flag: "-DAOS_DEBUG=1"
-      }
       flag_group {
         flag: "-fno-omit-frame-pointer"
       }
@@ -362,9 +354,6 @@ toolchain {
       action: "c++-header-parsing"
       action: "c++-header-preprocessing"
       action: "c++-module-compile"
-      flag_group {
-        flag: "-DAOS_DEBUG=0"
-      }
     }
   }
 

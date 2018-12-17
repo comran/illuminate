@@ -207,7 +207,7 @@ def run_build_env_docker_rebuild(args=None, show_complete=True):
 
 
 def run_build_env_docker_kill(args=None, show_complete=True):
-    result = kill_controls()
+    result = kill_build_env()
 
     if show_complete:
         if result == "":
@@ -264,6 +264,55 @@ def run_lint(args):
         print_update("NO LINTING OPTION SPECIFIED.", "FAILURE")
 
 
+def run_docker_start(args=None, show_complete=True):
+    print_update("Making sure all the necessary packages are installed")
+    run_install()
+
+    # Start the UAS@UCLA software development docker image if it is not already
+    # running.
+    run_env(show_complete=False)
+
+    if show_complete:
+        print_update("\n\nControls docker container started successfully", \
+                msg_type="SUCCESS")
+
+
+def run_docker_rebuild(args=None, show_complete=True):
+    print_update("Rebuilding docker environment.")
+    run_install()
+
+    run_docker_kill(False)
+
+    # Start the UAS@UCLA software development docker image if it is not already
+    # running.
+    run_env(show_complete=False, rebuild=True)
+
+    if show_complete:
+        print_update("\n\nControls docker container started successfully", \
+                msg_type="SUCCESS")
+
+
+def run_docker_kill(args=None, show_complete=True):
+    result = kill_build_env()
+
+    if show_complete:
+        if result == "":
+            print_update("\n\nControls docker container didn't exist in the first place", \
+                    msg_type="FAILURE")
+        else:
+            print_update("\n\nControls docker container killed successfully", \
+                    msg_type="SUCCESS")
+
+
+def run_docker_shell(args):
+    # Make sure the controls docker image is running first.
+    run_docker_start(None, show_complete=False)
+
+    # Run interactive command line
+    print_update("Starting shell tunnel to docker container")
+    processes.run_command("./tools/scripts/build_env/exec_interactive.sh /bin/bash")
+
+
 def run_help(args):
     print("./illuminate")
 
@@ -287,6 +336,17 @@ if __name__ == '__main__':
 
     build_parser = subparsers.add_parser('build')
     build_parser.set_defaults(func=run_build)
+
+    docker_parser = subparsers.add_parser('docker')
+    docker_subparsers = docker_parser.add_subparsers()
+    docker_start = docker_subparsers.add_parser('start')
+    docker_start.set_defaults(func=run_docker_start)
+    docker_rebuild = docker_subparsers.add_parser('rebuild')
+    docker_rebuild.set_defaults(func=run_docker_rebuild)
+    docker_kill = docker_subparsers.add_parser('kill')
+    docker_kill.set_defaults(func=run_docker_kill)
+    docker_shell = docker_subparsers.add_parser('shell')
+    docker_shell.set_defaults(func=run_docker_shell)
 
     lint_parser = subparsers.add_parser('lint')
     lint_parser.set_defaults(func=run_lint)

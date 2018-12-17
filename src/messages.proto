@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+package src;
+
+message ColorChange {
+  int32 frame                                                               = 1;
+  int32 color                                                               = 2;
+}
+
+message Pixel {
+  repeated ColorChange deltas                                               = 1;
+}
+
+message Frame {
+  repeated Pixel pixels                                                     = 1;
+}
+
+message Routine {
+  int32 fps                                                                 = 1;
+  string name                                                               = 2;
+  repeated Frame frames;                                                    = 3;
+}

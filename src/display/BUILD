@@ -1,12 +1,28 @@
 package(default_visibility = ['//visibility:public'])
 
 cc_binary(
-  name = 'uclaradio-lights_client',
+  name = 'display',
   visibility = ['//visibility:public'],
   srcs = [
-    'client.cc',
+    'display_main.cc',
   ],
   deps = [
+    ":display_lib"
+  ],
+)
+
+cc_library(
+  name = 'display_lib',
+  visibility = ['//visibility:public'],
+  srcs = [
+    'display.cc'
+  ],
+  hdrs = [
+    'display.h'
+  ],
+  deps = [
+    '//lib/phased_loop:phased_loop',
+
     "@rpi_ws281x//:rpi_ws281x",
     "@socketio_client_cpp//:socketio_client_cpp",
   ],

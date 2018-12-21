@@ -1,39 +1,11 @@
-#include "sio_client.h"
-#include "sio_socket.h"
-
-#include <unistd.h>
-
-#include <algorithm>
-#include <condition_variable>
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <memory>
-#include <mutex>
-#include <string>
-#include <thread>
-
-#include "clk.h"
-#include "dma.h"
-#include "gpio.h"
-#include "pwm.h"
-#include "version.h"
+#pragma once
 
 #include <atomic>
-#include <chrono>
-#include <cmath>
+#include <iomanip>
 #include <iostream>
-#include <limits>
 
-// #include "ws2811.h"
-
+#include "src/display/visualizer/led_strip/led_strip.h"
 #include "lib/phased_loop/phased_loop.h"
-
-#define TARGET_FREQ 800000
-#define GPIO_PIN 18
-#define DMA 5
-#define STRIP_TYPE WS2811_STRIP_GBR
-#define LED_COUNT 300
 
 namespace src {
 namespace display {
@@ -50,11 +22,25 @@ class Display {
   void RunIteration();
   void Quit();
 
+  enum State {
+    STARTUP = 0,
+    CONNECTING_TO_SERVER = 1,
+    DOWNLOADING_ROUTINES = 2,
+    BLANK = 3,
+    RUN_ROUTINES = 4,
+  };
+
  private:
+  void CheckFps();
+
+  LedStrip strip_;
+
   ::lib::phased_loop::PhasedLoop phased_loop_;
   ::std::atomic<bool> running_;
 
   double last_iteration_;
+
+  State state_;
 };
 
 } // namespace display

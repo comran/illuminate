@@ -21,6 +21,7 @@ cc_library(
     'display.h'
   ],
   deps = [
+    '//src/display/visualizer/led_strip:led_strip',
     '//lib/phased_loop:phased_loop',
 
     "@rpi_ws281x//:rpi_ws281x",

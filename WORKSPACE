@@ -27,7 +27,7 @@ new_git_repository(
   name = 'rpi_ws281x',
   remote = 'https://github.com/uas-at-ucla/rpi_ws281x.git',
   build_file = 'third_party/rpi_ws281x.BUILD',
-  commit = 'e3345674e5405777b61f4f509cd817d4923e99e4',
+  commit = '1ed3db19c746535ca7f1572455e62eed40bb4826',
 )
 
 new_git_repository(

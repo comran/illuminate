@@ -12,7 +12,7 @@ PhasedLoop::PhasedLoop(double frequency) :
 void PhasedLoop::SleepUntilNext() {
   double now = GetCurrentTime();
 
-  if(next_iteration_ == ::std::numeric_limits<double>::infinity()) {
+  if (next_iteration_ == ::std::numeric_limits<double>::infinity()) {
     next_iteration_ = GetCurrentTime();
   }
 

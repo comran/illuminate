@@ -1,0 +1,4 @@
+class Visualizer {
+ public:
+  Visualizer();
+};

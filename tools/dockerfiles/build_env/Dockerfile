@@ -1,10 +1,3 @@
-#       _   _   _    ____      ____    _   _  ____ _        _
-#      | | | | / \  / ___|    / __ \  | | | |/ ___| |      / \
-#      | | | |/ _ \ \___ \   / / _` | | | | | |   | |     / _ \
-#      | |_| / ___ \ ___) | | | (_| | | |_| | |___| |___ / ___ \
-#       \___/_/   \_\____/   \ \__,_|  \___/ \____|_____/_/   \_\
-#                             \____/
-
 FROM debian:stretch
 
 # Install compilation and testing dependencies #################################
@@ -13,14 +6,6 @@ RUN apt-get update     -qq                                                      
     apt-get install -y -qq gnupg
 
 # Add apt-get repositories containing required packages. ###########################
-#RUN echo "deb http://deb.debian.org/debian buster main contrib non-free\n" \
-#  "deb-src http://deb.debian.org/debian buster main\n\n" \
-#  "deb http://deb.debian.org/debian buster-updates main contrib non-free\n" \
-#  "deb-src http://deb.debian.org/debian buster-updates main\n\n" \
-#  "deb http://deb.debian.org/debian sid main contrib non-free\n" \
-#  "deb-src http://deb.debian.org/debian sid main" > \
-#  /etc/apt/sources.list
-
 RUN curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN echo "deb http://deb.debian.org/debian testing main" \
@@ -64,7 +49,6 @@ RUN apt-get update -qq                                                      && \
     libz-dev                                                                   \
     make                                                                       \
     nodejs                                                                     \
-    openjdk-10-jdk                                                             \
     pkg-config                                                                 \
     protobuf-compiler                                                          \
     python2.7                                                                  \

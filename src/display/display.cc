@@ -4,11 +4,16 @@ namespace src {
 namespace display {
 
 Display::Display() :
-    strip_(kNumberOfLeds),
+#ifdef RASPI_DEPLOYMENT
+    visualizer_(new LedStrip(kNumberOfLeds)),
+#else
+    visualizer_(new StdoutVisual(kNumberOfLeds)),
+#endif
     phased_loop_(kFramesPerSecond),
     running_(false),
     last_iteration_(::std::numeric_limits<double>::infinity()),
-    state_(STARTUP) {}
+    state_(STARTUP) {
+}
 
 void Display::Run() {
   running_ = true;
@@ -24,11 +29,17 @@ void Display::RunIteration() {
 
   State next_state;
 
-  for(int i = 0;i < kNumberOfLeds;i++) {
-    strip_.SetLed(i, 255, 0, 0);
+  for (int i = 0; i < kNumberOfLeds; i++) {
+    visualizer_->SetLed(i, 255, 0, 0);
   }
 
-  strip_.Render();
+  static int i = 0;
+  i++;
+  visualizer_->SetLed(i % kNumberOfLeds, 0, 0, 255);
+
+  if(!visualizer_->Render()) {
+    Quit();
+  }
 
   switch (state_) {
     case STARTUP:

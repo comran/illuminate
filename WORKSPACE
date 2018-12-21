@@ -168,6 +168,12 @@ new_git_repository(
   build_file = "third_party/gphoto2pp.BUILD"
 )
 
+git_repository(
+  name = "SDL2",
+  commit = "8fbd0acc4f8ea236cc2c61f50a2a0570623994a7",
+  remote = "https://github.com/uas-at-ucla/SDL2.git",
+)
+
 new_local_repository(
     name = "python_linux",
     path = "/usr",

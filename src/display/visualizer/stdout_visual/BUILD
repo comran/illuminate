@@ -1,17 +1,17 @@
 package(default_visibility = ['//visibility:public'])
 
 cc_library(
-  name = 'led_strip',
+  name = 'stdout_visual',
   visibility = ['//visibility:public'],
   srcs = [
-    'led_strip.cc'
+    'stdout_visual.cc'
   ],
   hdrs = [
-    'led_strip.h'
+    'stdout_visual.h'
   ],
   deps = [
     '//src/display/visualizer:visualizer',
 
-    "@rpi_ws281x//:rpi_ws281x",
+    '@SDL2//:SDL2'
   ],
 )

@@ -4,8 +4,12 @@
 #include <iomanip>
 #include <iostream>
 
-#include "src/display/visualizer/led_strip/led_strip.h"
 #include "lib/phased_loop/phased_loop.h"
+#ifdef RASPI_DEPLOYMENT
+#include "src/display/visualizer/led_strip/led_strip.h"
+#else
+#include "src/display/visualizer/stdout_visual/stdout_visual.h"
+#endif
 
 namespace src {
 namespace display {
@@ -33,7 +37,7 @@ class Display {
  private:
   void CheckFps();
 
-  LedStrip strip_;
+  Visualizer *visualizer_;
 
   ::lib::phased_loop::PhasedLoop phased_loop_;
   ::std::atomic<bool> running_;

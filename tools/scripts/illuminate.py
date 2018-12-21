@@ -170,8 +170,14 @@ def run_build(args=None, show_complete=True):
     # Execute the build commands in the running docker image.
     print_update("Downloading the dependencies...")
 
-    print_update("Building src directory...")
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " --cpu=raspi //src/...")
+    print_update("Building display for AMD64...")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " //src/display:display")
+
+    print_update("Building display for raspi...")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " --cpu=raspi //src/display:display")
+
+    print_update("Building lib directory...")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " //lib/...")
 
     if show_complete:
         print_update("\n\nBuild successful :^)", \

@@ -58,14 +58,14 @@ bool StdoutVisual::Render() {
   SDL_RenderClear(sdl_renderer_);
 
   // Draw pixels.
-  int kPixelSize = 3;
+  int kPixelSize = 6;
 
   for (int i = 0; i < number_of_leds_; i++) {
     SDL_Rect led;
     led.w = 3;
     led.h = 3;
-    led.x = kPixelSize * i;
-    led.y = 15;
+    led.x = (kPixelSize * i) % kDisplayWidth;
+    led.y = 15 + kPixelSize * (kPixelSize * i) / kDisplayWidth;
 
     int color = leds_[i];
     int r = color & 0xFF;

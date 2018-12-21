@@ -67,12 +67,6 @@ RUN apt-get update -qq                                                      && \
     uthash-dev                                                                 \
     vim
 
-# Fix git certificate bug with open JDK. #######################################
-RUN sed -i -e 's/keystore.type=pkcs12/keystore.type=jks/g' \
-  /etc/java-10-openjdk/security/java.security
-RUN rm /etc/ssl/certs/java/cacerts
-RUN update-ca-certificates -f
-
 # Install pip and python dependencies. #########################################
 RUN curl https://bootstrap.pypa.io/get-pip.py | python2.7
 RUN curl https://bootstrap.pypa.io/get-pip.py | python3.6

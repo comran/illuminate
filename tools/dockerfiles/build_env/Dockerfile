@@ -111,9 +111,19 @@ RUN pip2.7 install --user                                                      \
   pyzmq==17.0.0                                                                \
   zmq==0.0.0
 
+# Use a stable version of bazel. ###############################################
+WORKDIR /tmp
+RUN curl -L https://github.com/bazelbuild/bazel/releases/download/0.19.2/bazel-0.19.2-installer-linux-x86_64.sh > bazel-0.19.2-installer-linux-x86_64.sh
+RUN chmod +x bazel-0.19.2-installer-linux-x86_64.sh
+RUN ./bazel-0.19.2-installer-linux-x86_64.sh --user
+RUN echo "source /home/illuminate/.bazel/bin/bazel-complete.bash" > /home/illuminate/.bashrc
+
 # Set up working directory and permissions for later scripts to use. ###########
 WORKDIR /home/illuminate/code_env
 
 # Set user to root so that we can set the appropriate permissions for file #####
 # access later on. #############################################################
 USER root
+
+RUN mv /home/illuminate/bin/bazel /usr/local/sbin
+RUN rm -r /home/illuminate/bin

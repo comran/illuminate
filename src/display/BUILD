@@ -23,16 +23,16 @@ cc_library(
     'display.h'
   ],
   deps = [
+    '//src/display/client:client',
     '//lib/phased_loop:phased_loop',
 
     "@rpi_ws281x//:rpi_ws281x",
-    "@socketio_client_cpp//:socketio_client_cpp",
   ] + cpu_select({
     'amd64': [
-      '//src/display/visualizer/stdout_visual:stdout_visual',
+      '//src/display/visualizer:stdout_visual',
     ],
     'raspi': [
-      '//src/display/visualizer/led_strip:led_strip',
+      '//src/display/visualizer:led_strip',
     ],
   }),
   copts = [

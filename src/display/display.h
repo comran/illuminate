@@ -4,11 +4,12 @@
 #include <iomanip>
 #include <iostream>
 
+#include "src/display/client/client.h"
 #include "lib/phased_loop/phased_loop.h"
 #ifdef RASPI_DEPLOYMENT
-#include "src/display/visualizer/led_strip/led_strip.h"
+#include "src/display/visualizer/led_strip.h"
 #else
-#include "src/display/visualizer/stdout_visual/stdout_visual.h"
+#include "src/display/visualizer/stdout_visual.h"
 #endif
 
 namespace src {
@@ -45,6 +46,7 @@ class Display {
   double last_iteration_;
 
   State state_;
+  client::Client client_;
 };
 
 } // namespace display

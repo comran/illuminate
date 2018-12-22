@@ -14,7 +14,7 @@ StdoutVisual::StdoutVisual(int number_of_leds) :
   if (SDL_CreateWindowAndRenderer(kDisplayWidth, kDisplayHeight,
                                   SDL_WINDOW_SHOWN, &sdl_window_,
                                   &sdl_renderer_)) {
-    ::std::cout << "window open failed!\n";    
+    ::std::cout << "window open failed!\n";
     return;
   }
 
@@ -58,20 +58,19 @@ bool StdoutVisual::Render() {
   SDL_RenderClear(sdl_renderer_);
 
   // Draw pixels.
-  int kPixelSize = 6;
+  int kPixelSize = 15;
 
   for (int i = 0; i < number_of_leds_; i++) {
     SDL_Rect led;
-    led.w = 3;
-    led.h = 3;
-    led.x = (kPixelSize * i) % kDisplayWidth;
-    led.y = 15 + kPixelSize * (kPixelSize * i) / kDisplayWidth;
+    led.w = kPixelSize;
+    led.h = kPixelSize;
+    led.x = 200 + (kPixelSize * i) % 300;
+    led.y = 100 + ::std::floor(kPixelSize * i / 300) * kPixelSize;
 
     int color = leds_[i];
     int r = color & 0xFF;
     int g = (color >> 8) & 0xFF;
     int b = (color >> 16) & 0xFF;
-
 
     SDL_SetRenderDrawColor(sdl_renderer_, r, g, b, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(sdl_renderer_, &led);

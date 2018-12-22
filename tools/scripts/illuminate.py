@@ -179,6 +179,11 @@ def run_build(args=None, show_complete=True):
     print_update("Building lib directory...")
     run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " //lib/...")
 
+    print_update("Copy over finished binaries...")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "rm -rf /home/illuminate/code_env/tools/cache/build_output/*")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "mkdir -p /home/illuminate/code_env/tools/cache/build_output")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "cp -r bazel-out/k8-fastbuild/bin /home/illuminate/code_env/tools/cache/build_output")
+
     if show_complete:
         print_update("\n\nBuild successful :^)", \
                 msg_type="SUCCESS")

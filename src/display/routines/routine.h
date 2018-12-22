@@ -2,8 +2,5 @@ class Routine {
  public:
   Routine();
 
-  void GetFrame();
-
- private:
-  int frame_;
+  virtual void GetFrame();
 };

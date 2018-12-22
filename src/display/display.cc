@@ -28,7 +28,7 @@ void Display::Run() {
 void Display::RunIteration() {
   CheckFps();
 
-  State next_state;
+  State next_state = state_;
 
   if (!visualizer_->Render()) {
     Quit();
@@ -58,6 +58,10 @@ void Display::RunIteration() {
     case DOWNLOADING_ROUTINES:
       for (int i = 0; i < kNumberOfLeds; i++) {
         visualizer_->SetLed(i, 255, 255, 0);
+      }
+
+      if(!client_.connected()) {
+        next_state = CONNECTING_TO_SERVER;
       }
 
       break;

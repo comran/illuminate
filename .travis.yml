@@ -5,4 +5,4 @@ os:
   - linux
 
 script:
- - ./illuminate build
+ - ./illuminate display build

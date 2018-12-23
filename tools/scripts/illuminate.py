@@ -160,7 +160,7 @@ def run_travis(args):
         "./bazel-out/k8-fastbuild/bin/src/controls/loops/flight_loop_lib_test")
 
 
-def run_build(args=None, show_complete=True):
+def run_display_build(args=None, show_complete=True):
     shutdown_functions.append(kill_processes_in_illuminate_build_env_container)
 
     print_update("Going to build the code...")
@@ -187,6 +187,31 @@ def run_build(args=None, show_complete=True):
     if show_complete:
         print_update("\n\nBuild successful :^)", \
                 msg_type="SUCCESS")
+
+
+def run_display_run(args=None, show_complete=True):
+    run_display_build(None, False)
+
+    processes.spawn_process("./tools/cache/build_output/bin/src/display/display")
+    processes.wait_for_complete()
+
+
+def run_editor_run(args=None, show_complete=True):
+    filtered_args = ""
+
+    if args is not None and args.mapping is not None:
+        run_cmd_exit_failure("rm -rf tools/cache/editor")
+        run_cmd_exit_failure("mkdir -p tools/cache/editor")
+        run_cmd_exit_failure("cp " + args.mapping + " tools/cache/editor/pixels.csv")
+        filtered_args += "--mapping tools/cache/editor/pixels.csv"
+
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "tools/scripts/build_env/run_editor.sh " + filtered_args)
+
+
+def run_server_run(args=None, show_complete=True):
+    filtered_args = ""
+
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "tools/scripts/build_env/run_server.sh " + filtered_args)
 
 
 def run_build_env_docker_start(args=None, show_complete=True):
@@ -345,8 +370,23 @@ if __name__ == '__main__':
     install_parser = subparsers.add_parser('install')
     install_parser.set_defaults(func=run_install)
 
-    build_parser = subparsers.add_parser('build')
-    build_parser.set_defaults(func=run_build)
+    display_parser = subparsers.add_parser('display')
+    display_subparser = display_parser.add_subparsers()
+    display_build_parser = display_subparser.add_parser('build')
+    display_build_parser.set_defaults(func=run_display_build)
+    display_run_parser = display_subparser.add_parser('run')
+    display_run_parser.set_defaults(func=run_display_run)
+
+    editor_parser = subparsers.add_parser('editor')
+    editor_subparser = editor_parser.add_subparsers()
+    editor_run_parser = editor_subparser.add_parser('run')
+    editor_run_parser.set_defaults(func=run_editor_run)
+    editor_run_parser.add_argument('--mapping', action='store', required=False)
+
+    server_parser = subparsers.add_parser('server')
+    server_subparser = server_parser.add_subparsers()
+    server_run_parser = server_subparser.add_parser('run')
+    server_run_parser.set_defaults(func=run_server_run)
 
     docker_parser = subparsers.add_parser('docker')
     docker_subparsers = docker_parser.add_subparsers()

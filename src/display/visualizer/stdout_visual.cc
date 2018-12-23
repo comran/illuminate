@@ -64,8 +64,8 @@ bool StdoutVisual::Render() {
     SDL_Rect led;
     led.w = kPixelSize;
     led.h = kPixelSize;
-    led.x = 200 + (kPixelSize * i) % 300;
-    led.y = 100 + ::std::floor(kPixelSize * i / 300) * kPixelSize;
+    led.x = 200 + ::std::floor(((kPixelSize + 1) * i) % 300);
+    led.y = 100 + ::std::floor((kPixelSize + 1) * i / 300) * (1 + kPixelSize);
 
     int color = leds_[i];
     int r = color & 0xFF;

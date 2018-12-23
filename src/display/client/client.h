@@ -8,6 +8,9 @@
 namespace src {
 namespace display {
 namespace client {
+namespace {
+static constexpr double kReconnectDelay = 0.2;
+} // namespace
 
 class Client {
  public:

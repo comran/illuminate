@@ -13,7 +13,7 @@ Display::Display() :
     running_(false),
     last_iteration_(::std::numeric_limits<double>::infinity()),
     state_(STARTUP),
-    client_("http://127.0.0.1:5000") {
+    client_(kServerUrl) {
 }
 
 void Display::Run() {
@@ -88,14 +88,16 @@ void Display::CheckFps() {
           .count() *
       1e-9;
 
-  // double current_fps =
-  //     last_iteration_ == ::std::numeric_limits<double>::infinity()
-  //         ? 0
-  //         : 1.0 / (current_time - last_iteration_);
+  if(kPrintFps) {
+    double current_fps =
+        last_iteration_ == ::std::numeric_limits<double>::infinity()
+            ? 0
+            : 1.0 / (current_time - last_iteration_);
 
-  // ::std::cout << "Frame FPS: " << ::std::fixed << ::std::setprecision(1)
-  //             << current_fps << ::std::endl;
-
+    ::std::cout << "Frame FPS: " << ::std::fixed << ::std::setprecision(1)
+                << current_fps << ::std::endl;
+  }
+  
   last_iteration_ = current_time;
 }
 

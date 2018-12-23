@@ -32,8 +32,11 @@ Client::Client(const char * server_url) : connected_(false) {
     connected_ = false;
   });
 
+  client_.set_reconnect_delay(kReconnectDelay * 1e3);
+
   client_.connect(server_url);
 }
+
 bool Client::connected() {
   return connected_;
 }

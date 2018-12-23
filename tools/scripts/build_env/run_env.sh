@@ -91,7 +91,7 @@ DOCKER_BUILD_CMD="set -x; \
 docker run \
   -d \
   --rm \
-  --net illuminate_bridge \
+  --net=host \
   -v $ROOT_PATH:/home/illuminate/code_env \
   -v $ROOT_PATH/tools/cache/bazel:/home/illuminate/.cache/bazel  \
   -e DISPLAY=$DISPLAY \

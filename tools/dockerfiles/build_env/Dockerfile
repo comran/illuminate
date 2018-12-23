@@ -105,6 +105,7 @@ RUN pip2.7 install --user                                                      \
   socketIO-client==0.7.2                                                       \
   numpy==1.15.2                                                                \
   empy==3.3.2                                                                  \
+  opencv-python==3.4.4.19                                                      \
   toml==0.9.4                                                                  \
   eventlet==0.23.0                                                             \
   protobuf==3.5.2.post1                                                        \
@@ -120,6 +121,16 @@ RUN echo "source /home/illuminate/.bazel/bin/bazel-complete.bash" > /home/illumi
 
 # Set up working directory and permissions for later scripts to use. ###########
 WORKDIR /home/illuminate/code_env
+
+RUN pip3.7 install --user                                                      \
+  opencv-python==3.4.4.19                                                      \
+  protobuf==3.6.1                                                              \
+  python-engineio==3.1.2                                                       \
+  Flask==0.12.2                                                                \
+  Flask-SocketIO==2.9.2                                                        \
+  futures==3.1.1                                                               \
+  socketIO-client==0.7.2                                                       \
+  eventlet==0.23.0
 
 # Set user to root so that we can set the appropriate permissions for file #####
 # access later on. #############################################################

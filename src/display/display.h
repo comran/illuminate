@@ -16,7 +16,7 @@ namespace src {
 namespace display {
 namespace {
 static constexpr int kFramesPerSecond = 30;
-static constexpr int kNumberOfLeds = 300;
+static constexpr int kNumberOfLeds = 265;
 static const bool kPrintFps = false;
 static const char * const kServerUrl = "http://127.0.0.1:5000";
 } // namespace
@@ -33,8 +33,9 @@ class Display {
     STARTUP = 0,
     CONNECTING_TO_SERVER = 1,
     DOWNLOADING_ROUTINES = 2,
-    BLANK = 3,
-    RUN_ROUTINES = 4,
+    WAIT_FOR_DOWNLOAD_TO_COMPLETE = 3,
+    BLANK = 4,
+    RUN_ROUTINES = 5,
   };
 
  private:

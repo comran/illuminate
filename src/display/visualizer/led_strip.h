@@ -3,6 +3,7 @@
 #include "ws2811.h"
 
 #include "src/display/visualizer/visualizer.h"
+#include "src/messages.pb.h"
 
 namespace {
 static const int kLedStripTargetFrequency = 800000;
@@ -18,6 +19,7 @@ class LedStrip : public Visualizer {
 
   bool Render();
   void SetLed(int led, unsigned char r, unsigned char g, unsigned char b);
+  void SetPixelLayout(::src::PixelLayout &pixel_layout);
 
  private:
   ws2811_t leds_;

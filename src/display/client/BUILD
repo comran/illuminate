@@ -10,6 +10,8 @@ cc_library(
     'client.h'
   ],
   deps = [
+    "//src:messages_cpp",
+    "//lib/base64_tools:base64_tools",
     "@socketio_client_cpp//:socketio_client_cpp",
   ],
   copts = [

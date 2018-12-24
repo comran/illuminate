@@ -35,10 +35,4 @@ cc_library(
       '//src/display/visualizer:led_strip',
     ],
   }),
-  copts = [
-    '-std=c++11',
-    '-pipe',
-    '-Wno-unused-parameter',
-    '-Wno-unused-private-field',
-  ],
 )

@@ -7,6 +7,7 @@ import argparse
 import base64
 import sys
 sys.path.append('tools/cache/proto')
+sys.dont_write_bytecode = True
 import messages_pb2
 
 args = None
@@ -90,7 +91,7 @@ def update_pixel_locations(mapping_file):
         y = y + 1
     
     data = base64.b64encode(pixel_layout.SerializeToString()).decode("ascii")
-    socket.emit("pixel_locations", data)
+    socket.emit("set_pixel_locations", data)
 
 if __name__ == '__main__':
     print("connecting...")

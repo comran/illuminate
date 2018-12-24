@@ -4,7 +4,8 @@ StdoutVisual::StdoutVisual(int number_of_leds) :
     number_of_leds_(number_of_leds),
     leds_(new uint32_t[number_of_leds]),
     sdl_window_(nullptr),
-    sdl_renderer_(nullptr) {
+    sdl_renderer_(nullptr),
+    pixel_layout_(nullptr) {
 
   if (SDL_Init(SDL_INIT_EVERYTHING)) {
     ::std::cout << "init failed: " << SDL_GetError() << "\n";
@@ -67,6 +68,11 @@ bool StdoutVisual::Render() {
     led.x = 200 + ::std::floor(((kPixelSize + 1) * i) % 300);
     led.y = 100 + ::std::floor((kPixelSize + 1) * i / 300) * (1 + kPixelSize);
 
+    if(pixel_layout_ != nullptr && i < pixel_layout_->pixel_locations_size()) {
+      led.x = pixel_layout_->pixel_locations(i).x() * kDisplayWidth;
+      led.y = pixel_layout_->pixel_locations(i).y() * kDisplayHeight;
+    }
+
     int color = leds_[i];
     int r = color & 0xFF;
     int g = (color >> 8) & 0xFF;
@@ -79,4 +85,8 @@ bool StdoutVisual::Render() {
   SDL_RenderPresent(sdl_renderer_);
 
   return true;
+}
+
+void StdoutVisual::SetPixelLayout(::src::PixelLayout &pixel_layout) {
+  pixel_layout_ = &pixel_layout;
 }

@@ -6,6 +6,9 @@ cc_library(
   hdrs = [
     'visualizer.h'
   ],
+  deps = [
+    "//src:messages_cpp",
+  ],
 )
 
 cc_library(

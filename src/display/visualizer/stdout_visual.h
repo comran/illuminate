@@ -7,6 +7,7 @@
 #include "SDL.h"
 
 #include "src/display/visualizer/visualizer.h"
+#include "src/messages.pb.h"
 
 namespace {
 static int kDisplayWidth = 1280;
@@ -20,6 +21,7 @@ class StdoutVisual : public Visualizer {
 
   bool Render();
   void SetLed(int led, unsigned char r, unsigned char g, unsigned char b);
+  void SetPixelLayout(::src::PixelLayout &pixel_layout);
 
  private:
   int number_of_leds_;
@@ -27,4 +29,6 @@ class StdoutVisual : public Visualizer {
 
   SDL_Window *sdl_window_;
   SDL_Renderer *sdl_renderer_;
+
+  ::src::PixelLayout *pixel_layout_;
 };

@@ -190,7 +190,13 @@ def run_display_build(args=None, show_complete=True):
 
 
 def run_display_run(args=None, show_complete=True):
-    run_display_build(None, False)
+    print_update("Building display for AMD64...")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " //src/display:display")
+
+    print_update("Copy over finished binaries...")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "rm -rf /home/illuminate/code_env/tools/cache/build_output/*")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "mkdir -p /home/illuminate/code_env/tools/cache/build_output")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "cp -r bazel-out/k8-fastbuild/bin /home/illuminate/code_env/tools/cache/build_output")
 
     processes.spawn_process("./tools/cache/build_output/bin/src/display/display")
     processes.wait_for_complete()

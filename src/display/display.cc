@@ -56,12 +56,23 @@ void Display::RunIteration() {
       break;
 
     case DOWNLOADING_ROUTINES:
+      client_.FetchData();
+      next_state = WAIT_FOR_DOWNLOAD_TO_COMPLETE;
+
+      break;
+
+    case WAIT_FOR_DOWNLOAD_TO_COMPLETE:
       for (int i = 0; i < kNumberOfLeds; i++) {
         visualizer_->SetLed(i, 255, 255, 0);
       }
 
       if(!client_.connected()) {
         next_state = CONNECTING_TO_SERVER;
+      }
+
+      if(client_.got_pixel_layout()) {
+        visualizer_->SetPixelLayout(client_.pixel_layout());
+        next_state = RUN_ROUTINES;
       }
 
       break;
@@ -74,7 +85,14 @@ void Display::RunIteration() {
       break;
 
     case RUN_ROUTINES:
+      for (int i = 0; i < kNumberOfLeds; i++) {
+        visualizer_->SetLed(i, 0, 255, 0);
+      }
 
+      if(!client_.connected()) {
+        next_state = CONNECTING_TO_SERVER;
+      }
+      
       break;
   }
 

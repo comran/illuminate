@@ -4,7 +4,7 @@ namespace src {
 namespace display {
 namespace client {
 
-Client::Client(const char * server_url) : connected_(false) {
+Client::Client(const char * server_url) : connected_(false), got_pixel_layout_(false) {
   client_.set_open_listener([this]() {
     ::std::cout << "Connect!\n";
 
@@ -37,8 +37,28 @@ Client::Client(const char * server_url) : connected_(false) {
   client_.connect(server_url);
 }
 
+void Client::FetchData() {
+  client_.socket()->emit("get_pixel_locations",
+    ::sio::string_message::create(""),
+    [&](::sio::message::list const& msg) {
+
+    ::std::string serialized_pixel_locations = ::lib::base64_tools::Decode(msg[0].get()->get_string());
+    pixel_layout_.ParseFromString(serialized_pixel_locations);
+
+    got_pixel_layout_ = true;
+  });
+}
+
+::src::PixelLayout& Client::pixel_layout() {
+  return pixel_layout_;
+}
+
 bool Client::connected() {
   return connected_;
+}
+
+bool Client::got_pixel_layout() {
+  return got_pixel_layout_;
 }
 
 } // namespace client

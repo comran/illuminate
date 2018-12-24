@@ -12,6 +12,8 @@ os.chdir("../..")
 sys.dont_write_bytecode = True
 sys.path.insert(0, 'lib')
 import process_manager
+received_signal = False
+shutdown_functions = []
 
 processes = process_manager.ProcessManager()
 
@@ -202,22 +204,22 @@ def run_display_run(args=None, show_complete=True):
     processes.wait_for_complete()
 
 
-def run_editor_run(args=None, show_complete=True):
-    filtered_args = ""
+def run_editor_mapping(args=None, show_complete=True):
+    run_cmd_exit_failure("rm -rf tools/cache/editor")
+    run_cmd_exit_failure("mkdir -p tools/cache/editor")
+    run_cmd_exit_failure("cp " + args.csv + " tools/cache/editor/pixels.csv")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "tools/scripts/build_env/run_editor.sh mapping --csv tools/cache/editor/pixels.csv")
 
-    if args is not None and args.mapping is not None:
-        run_cmd_exit_failure("rm -rf tools/cache/editor")
-        run_cmd_exit_failure("mkdir -p tools/cache/editor")
-        run_cmd_exit_failure("cp " + args.mapping + " tools/cache/editor/pixels.csv")
-        filtered_args += "--mapping tools/cache/editor/pixels.csv"
 
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "tools/scripts/build_env/run_editor.sh " + filtered_args)
+def run_editor_routine(args=None, show_complete=True):
+    run_cmd_exit_failure("rm -rf tools/cache/editor")
+    run_cmd_exit_failure("mkdir -p tools/cache/editor")
+    run_cmd_exit_failure("cp " + args.video + " tools/cache/editor/video.mp4")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "tools/scripts/build_env/run_editor.sh routine --video tools/cache/editor/video.mp4 --id " + args.id + " --minx " + args.minx + " --miny " + args.miny + " --maxx " + args.maxx + " --maxy " + args.maxy)
 
 
 def run_server_run(args=None, show_complete=True):
-    filtered_args = ""
-
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "tools/scripts/build_env/run_server.sh " + filtered_args)
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "tools/scripts/build_env/run_server.sh")
 
 
 def run_build_env_docker_start(args=None, show_complete=True):
@@ -360,21 +362,12 @@ def run_help(args):
 
 
 if __name__ == '__main__':
-    global received_signal
-    received_signal = False
     signal.signal(signal.SIGINT, signal_received)
-
-    global shutdown_functions
-    shutdown_functions = []
 
     print(WELCOME_TEXT)
 
     parser = argparse.ArgumentParser()
-
     subparsers = parser.add_subparsers()
-
-    install_parser = subparsers.add_parser('install')
-    install_parser.set_defaults(func=run_install)
 
     display_parser = subparsers.add_parser('display')
     display_subparser = display_parser.add_subparsers()
@@ -385,9 +378,17 @@ if __name__ == '__main__':
 
     editor_parser = subparsers.add_parser('editor')
     editor_subparser = editor_parser.add_subparsers()
-    editor_run_parser = editor_subparser.add_parser('run')
-    editor_run_parser.set_defaults(func=run_editor_run)
-    editor_run_parser.add_argument('--mapping', action='store', required=False)
+    editor_run_mapping_parser = editor_subparser.add_parser('mapping')
+    editor_run_mapping_parser.add_argument('--csv', action='store', required=True)
+    editor_run_mapping_parser.set_defaults(func=run_editor_mapping)
+    editor_run_routine_parser = editor_subparser.add_parser('routine')
+    editor_run_routine_parser.add_argument('--video', action='store', required=True)
+    editor_run_routine_parser.add_argument('--id', action='store', required=True)
+    editor_run_routine_parser.add_argument('--minx', action='store', required=True)
+    editor_run_routine_parser.add_argument('--miny', action='store', required=True)
+    editor_run_routine_parser.add_argument('--maxx', action='store', required=True)
+    editor_run_routine_parser.add_argument('--maxy', action='store', required=True)
+    editor_run_routine_parser.set_defaults(func=run_editor_routine)
 
     server_parser = subparsers.add_parser('server')
     server_subparser = server_parser.add_subparsers()

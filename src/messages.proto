@@ -2,17 +2,8 @@ syntax = "proto2";
 
 package src;
 
-message ColorChange {
-  required int32 frame                                                      = 1;
-  required int32 color                                                      = 2;
-}
-
-message Pixel {
-  repeated ColorChange deltas                                               = 1;
-}
-
 message Frame {
-  repeated Pixel pixels                                                     = 1;
+  repeated int32 pixel_colors                                               = 1;
 }
 
 message Routine {

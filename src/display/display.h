@@ -6,6 +6,8 @@
 
 #include "lib/phased_loop/phased_loop.h"
 #include "src/display/client/client.h"
+#include "src/display/routines/programmed_routine.h"
+
 #ifdef RASPI_DEPLOYMENT
 #include "src/display/visualizer/led_strip.h"
 #else
@@ -47,10 +49,11 @@ class Display {
   ::std::atomic<bool> running_;
 
   double last_iteration_;
-  int current_routine_;
 
   State state_;
+  int current_routine_;
   client::Client client_;
+  ProgrammedRoutine programmed_routine_;
 };
 
 } // namespace display

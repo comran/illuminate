@@ -14,9 +14,6 @@ cc_library(
 cc_library(
   name = 'led_strip',
   visibility = ['//visibility:public'],
-  srcs = [
-    'led_strip.cc'
-  ],
   hdrs = [
     'led_strip.h'
   ],
@@ -29,9 +26,6 @@ cc_library(
 cc_library(
   name = 'simulator',
   visibility = ['//visibility:public'],
-  srcs = [
-    'simulator.cc'
-  ],
   hdrs = [
     'simulator.h'
   ],

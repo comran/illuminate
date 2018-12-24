@@ -13,8 +13,8 @@ Display::Display() :
     running_(false),
     last_iteration_(::std::numeric_limits<double>::infinity()),
     state_(STARTUP),
-    client_(kServerUrl),
-    current_routine_(-1) {
+    current_routine_(-1),
+    client_(kServerUrl) {
 }
 
 void Display::Run() {
@@ -73,8 +73,12 @@ void Display::RunIteration() {
 
       if (client_.FetchFinished()) {
         visualizer_->SetPixelLayout(client_.pixel_layout());
-        if(client_.routines().size() > 0) {
+        if (client_.routines_order().size() > 0) {
           current_routine_ = 0;
+          ::std::string routine_to_run =
+              client_.routines_order()[current_routine_];
+          programmed_routine_.LoadRoutineFromProto(
+              client_.routines()[routine_to_run]);
           next_state = RUN_ROUTINES;
         } else {
           next_state = BLANK;
@@ -91,8 +95,15 @@ void Display::RunIteration() {
       break;
 
     case RUN_ROUTINES:
-      for (int i = 0; i < kNumberOfLeds; i++) {
-        visualizer_->SetLed(i, 0, 255, 0);
+      programmed_routine_.DrawFrame(*visualizer_);
+
+      if (programmed_routine_.AnimationComplete()) {
+        current_routine_ =
+            (current_routine_ + 1) % client_.routines_order().size();
+        ::std::string routine_to_run =
+            client_.routines_order()[current_routine_];
+        programmed_routine_.LoadRoutineFromProto(
+            client_.routines()[routine_to_run]);
       }
 
       if (!client_.connected()) {

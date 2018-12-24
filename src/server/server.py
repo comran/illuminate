@@ -129,6 +129,7 @@ def get_routine_list(m):
 @socketio.on('get_partial_routine')
 def get_partial_routine(m):
     routine_encoded = routines_encoded[m["name"]]
+    print("size is " + str(len(routine_encoded)))
 
     written = 0
     global kToWrite
@@ -142,8 +143,7 @@ def get_partial_routine(m):
 
         msg["payload"] = str(part)
         msg["name"] = m["name"]
-        msg["start"] = written
-        msg["end"] = end
+        msg["count"] = count
 
         socketio.emit(m["rx_identifier"], msg)
         written += kToWrite
@@ -188,7 +188,7 @@ if __name__ == '__main__':
                 os.remove(routine_filename)
                 continue
 
-            print("Opened saved routine file: " + routine.name)
+            print("Opened saved routine file: " + routine.name + " with " + str(len(routine.frames)) + " frames")
             
             routines[routine.name] = routine
             routines_encoded[routine.name] = read_file

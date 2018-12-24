@@ -81,15 +81,18 @@ bool Client::FetchFinished() {
       continue;
     }
 
-    ::std::string reassembled_data;
+    ::std::string reassembled_data = "";
     for (int j = 0; j < partial_routines_sizes_[routine_to_receive]; j++) {
-      reassembled_data += partial_routines_[routine_to_receive][j];
+      reassembled_data =
+          reassembled_data + partial_routines_[routine_to_receive][j];
     }
 
     ::std::string decoded_data = ::lib::base64_tools::Decode(reassembled_data);
+
     ::src::Routine routine;
     routine.ParseFromString(decoded_data);
-    ::std::cout << "Received " << routine.name() << ::std::endl;
+    ::std::cout << "Received " << routine.name() << " with "
+                << routine.frames_size() << " frames" << ::std::endl;
 
     routines_[routine.name()] = routine;
     routines_to_receive_.erase(routines_to_receive_.begin() + i);
@@ -109,14 +112,18 @@ void Client::DownloadRoutines(::std::vector<::std::string> routine_list) {
               bool isAck, sio::message::list &ack_resp) {
             ::std::string routine_name =
                 data.get()->get_map()["name"].get()->get_string();
-            int start = data.get()->get_map()["start"].get()->get_int();
-            partial_routines_[routine_name][start] =
+            int count = data.get()->get_map()["count"].get()->get_int();
+            partial_routines_[routine_name][count] =
                 data.get()->get_map()["payload"].get()->get_string();
           }));
 
   // Send out requests for all routines.
   routines_to_receive_.insert(routines_to_receive_.end(), routine_list.begin(),
                               routine_list.end());
+
+  routines_order_.insert(routines_order_.end(), routine_list.begin(),
+                         routine_list.end());
+
   for (::std::string routine : routine_list) {
     partial_routines_sizes_[routine] = -1;
 

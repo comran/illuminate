@@ -32,7 +32,7 @@ Simulator::~Simulator() {
 }
 
 void Simulator::SetLed(int led, unsigned char r, unsigned char g,
-                          unsigned char b) {
+                       unsigned char b) {
 
   uint32_t led_color = (b << 16) | (g << 8) | r;
 
@@ -40,16 +40,16 @@ void Simulator::SetLed(int led, unsigned char r, unsigned char g,
 }
 
 bool Simulator::Render() {
-  if(sdl_window_ == nullptr || sdl_renderer_ == nullptr) {
-    return true;
-  }
-
   SDL_Event event;
   if (SDL_PollEvent(&event)) {
     switch (event.type) {
       case SDL_QUIT:
         return false;
     }
+  }
+
+  if (sdl_window_ == nullptr || sdl_renderer_ == nullptr) {
+    return true;
   }
 
   SDL_SetRenderDrawColor(sdl_renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -65,7 +65,7 @@ bool Simulator::Render() {
     led.x = 200 + ::std::floor(((kPixelSize + 1) * i) % 300);
     led.y = 100 + ::std::floor((kPixelSize + 1) * i / 300) * (1 + kPixelSize);
 
-    if(pixel_layout_ != nullptr && i < pixel_layout_->pixel_locations_size()) {
+    if (pixel_layout_ != nullptr && i < pixel_layout_->pixel_locations_size()) {
       led.x = pixel_layout_->pixel_locations(i).x() * window_width_;
       led.y = pixel_layout_->pixel_locations(i).y() * window_height_;
     }

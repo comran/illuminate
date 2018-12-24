@@ -4,8 +4,8 @@
 #include <iomanip>
 #include <iostream>
 
-#include "src/display/client/client.h"
 #include "lib/phased_loop/phased_loop.h"
+#include "src/display/client/client.h"
 #ifdef RASPI_DEPLOYMENT
 #include "src/display/visualizer/led_strip.h"
 #else
@@ -18,7 +18,7 @@ namespace {
 static constexpr int kFramesPerSecond = 30;
 static constexpr int kNumberOfLeds = 265;
 static const bool kPrintFps = false;
-static const char * const kServerUrl = "http://127.0.0.1:5000";
+static const char *const kServerUrl = "http://127.0.0.1:5000";
 } // namespace
 
 class Display {
@@ -47,6 +47,7 @@ class Display {
   ::std::atomic<bool> running_;
 
   double last_iteration_;
+  int current_routine_;
 
   State state_;
   client::Client client_;

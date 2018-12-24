@@ -13,7 +13,8 @@ Display::Display() :
     running_(false),
     last_iteration_(::std::numeric_limits<double>::infinity()),
     state_(STARTUP),
-    client_(kServerUrl) {
+    client_(kServerUrl),
+    current_routine_(-1) {
 }
 
 void Display::Run() {
@@ -49,7 +50,7 @@ void Display::RunIteration() {
         visualizer_->SetLed(i, 255, 0, 0);
       }
 
-      if(client_.connected()) {
+      if (client_.connected()) {
         next_state = DOWNLOADING_ROUTINES;
       }
 
@@ -66,13 +67,18 @@ void Display::RunIteration() {
         visualizer_->SetLed(i, 255, 255, 0);
       }
 
-      if(!client_.connected()) {
+      if (!client_.connected()) {
         next_state = CONNECTING_TO_SERVER;
       }
 
-      if(client_.got_pixel_layout()) {
+      if (client_.FetchFinished()) {
         visualizer_->SetPixelLayout(client_.pixel_layout());
-        next_state = RUN_ROUTINES;
+        if(client_.routines().size() > 0) {
+          current_routine_ = 0;
+          next_state = RUN_ROUTINES;
+        } else {
+          next_state = BLANK;
+        }
       }
 
       break;
@@ -89,10 +95,10 @@ void Display::RunIteration() {
         visualizer_->SetLed(i, 0, 255, 0);
       }
 
-      if(!client_.connected()) {
+      if (!client_.connected()) {
         next_state = CONNECTING_TO_SERVER;
       }
-      
+
       break;
   }
 
@@ -106,7 +112,7 @@ void Display::CheckFps() {
           .count() *
       1e-9;
 
-  if(kPrintFps) {
+  if (kPrintFps) {
     double current_fps =
         last_iteration_ == ::std::numeric_limits<double>::infinity()
             ? 0
@@ -115,7 +121,7 @@ void Display::CheckFps() {
     ::std::cout << "Frame FPS: " << ::std::fixed << ::std::setprecision(1)
                 << current_fps << ::std::endl;
   }
-  
+
   last_iteration_ = current_time;
 }
 

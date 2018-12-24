@@ -132,6 +132,9 @@ def run_routine(args):
     def extraction(pixel_layout_data):
         global routine
 
+        socket.emit("set_routine_start")
+
+
         pixel_layout = messages_pb2.PixelLayout()
         pixel_layout.ParseFromString(base64.b64decode(pixel_layout_data))
 

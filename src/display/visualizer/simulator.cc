@@ -1,28 +1,21 @@
-#include "stdout_visual.h"
+#include "simulator.h"
 
-StdoutVisual::StdoutVisual(int number_of_leds) :
+Simulator::Simulator(int number_of_leds) :
     number_of_leds_(number_of_leds),
     leds_(new uint32_t[number_of_leds]),
     sdl_window_(nullptr),
     sdl_renderer_(nullptr),
+    window_width_(0),
+    window_height_(0),
     pixel_layout_(nullptr) {
 
   if (SDL_Init(SDL_INIT_EVERYTHING)) {
     ::std::cout << "init failed: " << SDL_GetError() << "\n";
     return;
   }
-
-  if (SDL_CreateWindowAndRenderer(kDisplayWidth, kDisplayHeight,
-                                  SDL_WINDOW_SHOWN, &sdl_window_,
-                                  &sdl_renderer_)) {
-    ::std::cout << "window open failed!\n";
-    return;
-  }
-
-  SDL_SetWindowTitle(sdl_window_, "Illuminate");
 }
 
-StdoutVisual::~StdoutVisual() {
+Simulator::~Simulator() {
   delete[] leds_;
 
   if (sdl_renderer_ != nullptr) {
@@ -38,7 +31,7 @@ StdoutVisual::~StdoutVisual() {
   SDL_Quit();
 }
 
-void StdoutVisual::SetLed(int led, unsigned char r, unsigned char g,
+void Simulator::SetLed(int led, unsigned char r, unsigned char g,
                           unsigned char b) {
 
   uint32_t led_color = (b << 16) | (g << 8) | r;
@@ -46,7 +39,11 @@ void StdoutVisual::SetLed(int led, unsigned char r, unsigned char g,
   leds_[led] = led_color;
 }
 
-bool StdoutVisual::Render() {
+bool Simulator::Render() {
+  if(sdl_window_ == nullptr || sdl_renderer_ == nullptr) {
+    return true;
+  }
+
   SDL_Event event;
   if (SDL_PollEvent(&event)) {
     switch (event.type) {
@@ -69,8 +66,8 @@ bool StdoutVisual::Render() {
     led.y = 100 + ::std::floor((kPixelSize + 1) * i / 300) * (1 + kPixelSize);
 
     if(pixel_layout_ != nullptr && i < pixel_layout_->pixel_locations_size()) {
-      led.x = pixel_layout_->pixel_locations(i).x() * kDisplayWidth;
-      led.y = pixel_layout_->pixel_locations(i).y() * kDisplayHeight;
+      led.x = pixel_layout_->pixel_locations(i).x() * window_width_;
+      led.y = pixel_layout_->pixel_locations(i).y() * window_height_;
     }
 
     int color = leds_[i];
@@ -87,6 +84,28 @@ bool StdoutVisual::Render() {
   return true;
 }
 
-void StdoutVisual::SetPixelLayout(::src::PixelLayout &pixel_layout) {
+void Simulator::SetPixelLayout(::src::PixelLayout &pixel_layout) {
+  // Destroy old window.
+  if (sdl_renderer_ != nullptr) {
+    SDL_DestroyRenderer(sdl_renderer_);
+  }
+
+  if (sdl_window_ != nullptr) {
+    SDL_DestroyWindow(sdl_window_);
+  }
+
+  window_width_ = kMaxWindowSize * pixel_layout.width();
+  window_height_ = kMaxWindowSize * pixel_layout.height();
+
+  if (SDL_CreateWindowAndRenderer(window_width_, window_height_,
+                                  SDL_WINDOW_SHOWN, &sdl_window_,
+                                  &sdl_renderer_)) {
+
+    ::std::cout << "window open failed!\n";
+    return;
+  }
+
+  SDL_SetWindowTitle(sdl_window_, "Illuminate");
+
   pixel_layout_ = &pixel_layout;
 }

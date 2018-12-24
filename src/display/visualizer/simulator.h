@@ -10,14 +10,13 @@
 #include "src/messages.pb.h"
 
 namespace {
-static int kDisplayWidth = 1280;
-static int kDisplayHeight = 720;
+static int kMaxWindowSize = 1920;
 } // namespace
 
-class StdoutVisual : public Visualizer {
+class Simulator : public Visualizer {
  public:
-  StdoutVisual(int number_of_leds);
-  ~StdoutVisual();
+  Simulator(int number_of_leds);
+  ~Simulator();
 
   bool Render();
   void SetLed(int led, unsigned char r, unsigned char g, unsigned char b);
@@ -29,6 +28,9 @@ class StdoutVisual : public Visualizer {
 
   SDL_Window *sdl_window_;
   SDL_Renderer *sdl_renderer_;
+
+  int window_width_;
+  int window_height_;
 
   ::src::PixelLayout *pixel_layout_;
 };

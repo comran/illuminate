@@ -27,13 +27,13 @@ cc_library(
 )
 
 cc_library(
-  name = 'stdout_visual',
+  name = 'simulator',
   visibility = ['//visibility:public'],
   srcs = [
-    'stdout_visual.cc'
+    'simulator.cc'
   ],
   hdrs = [
-    'stdout_visual.h'
+    'simulator.h'
   ],
   deps = [
     ':visualizer',

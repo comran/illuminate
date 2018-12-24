@@ -65,6 +65,6 @@ bool LedStrip::Render() {
   return true;
 }
 
-void LedStrip::SetPixelLayout(::src::PixelLayout *pixel_layout) {
+void LedStrip::SetPixelLayout(::src::PixelLayout &pixel_layout) {
   return;
 }

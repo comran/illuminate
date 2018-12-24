@@ -9,7 +9,7 @@
 #ifdef RASPI_DEPLOYMENT
 #include "src/display/visualizer/led_strip.h"
 #else
-#include "src/display/visualizer/stdout_visual.h"
+#include "src/display/visualizer/simulator.h"
 #endif
 
 namespace src {

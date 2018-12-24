@@ -7,7 +7,7 @@ Display::Display() :
 #ifdef RASPI_DEPLOYMENT
     visualizer_(new LedStrip(kNumberOfLeds)),
 #else
-    visualizer_(new StdoutVisual(kNumberOfLeds)),
+    visualizer_(new Simulator(kNumberOfLeds)),
 #endif
     phased_loop_(kFramesPerSecond),
     running_(false),

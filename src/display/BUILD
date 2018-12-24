@@ -29,7 +29,7 @@ cc_library(
     "@rpi_ws281x//:rpi_ws281x",
   ] + cpu_select({
     'amd64': [
-      '//src/display/visualizer:stdout_visual',
+      '//src/display/visualizer:simulator',
     ],
     'raspi': [
       '//src/display/visualizer:led_strip',

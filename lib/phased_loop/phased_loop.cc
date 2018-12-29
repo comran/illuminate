@@ -24,7 +24,7 @@ void PhasedLoop::SleepUntilNext() {
 
 double PhasedLoop::GetCurrentTime() {
   return ::std::chrono::duration_cast<::std::chrono::nanoseconds>(
-             ::std::chrono::system_clock::now().time_since_epoch())
+             ::std::chrono::steady_clock::now().time_since_epoch())
              .count() *
          1e-9;
 }

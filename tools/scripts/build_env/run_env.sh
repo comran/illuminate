@@ -11,6 +11,57 @@ ENV_DOCKER_RUNNING_CONTAINER=$(docker ps \
   --latest \
   )
 
+# Check if Dockerfile was updated, indicating that the existing docker container
+# needs to be killed.
+mkdir -p tools/cache/checksums
+CHECKSUM=$(md5sum tools/dockerfiles/build_env/Dockerfile)
+MATCH=0
+
+if [ -f tools/cache/checksums/build_env_dockerfile.md5 ]
+then
+  LAST_CHECKSUM=$(cat tools/cache/checksums/build_env_dockerfile.md5)
+
+  CHECKSUM=$(echo -e "${CHECKSUM}" | tr -d '[:space:]')
+  LAST_CHECKSUM=$(echo -e "${LAST_CHECKSUM}" | tr -d '[:space:]')
+
+  if [ "$CHECKSUM" = "$LAST_CHECKSUM" ]
+  then
+    MATCH=1
+  fi
+fi
+
+if [ $MATCH -eq 0 ]
+then
+  RUNNING_DOCKER_CONTAINERS=$(docker ps \
+    --filter name=illuminate_build_env \
+    --filter status=running \
+    --format "{{.ID}}" \
+    --latest \
+  )
+
+  if [ ! -z $RUNNING_DOCKER_CONTAINERS ]
+  then
+    echo "build_env dockerfile updated; killing existing container"
+
+    docker kill $RUNNING_DOCKER_CONTAINERS
+
+    while [ ! -z $RUNNING_DOCKER_CONTAINERS ]
+    do
+      RUNNING_DOCKER_CONTAINERS=$(docker ps \
+        --filter name=illuminate_build_env \
+        --filter status=running \
+        --format "{{.ID}}" \
+        --latest \
+      )
+
+      sleep 0.25
+    done
+  fi
+
+  CHECKSUM=$(md5sum tools/dockerfiles/build_env/Dockerfile)
+  echo $CHECKSUM > tools/cache/checksums/build_env_dockerfile.md5
+fi
+
 if [ ! -z $ENV_DOCKER_RUNNING_CONTAINER ]
 then
   echo "Docker environment already running."
@@ -93,7 +144,6 @@ docker run \
   --rm \
   --net=host \
   -v $ROOT_PATH:/home/illuminate/code_env \
-  -v $ROOT_PATH/tools/cache/bazel:/home/illuminate/.cache/bazel  \
   -e DISPLAY=$DISPLAY \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   --dns 8.8.8.8 \

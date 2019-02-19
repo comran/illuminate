@@ -92,24 +92,6 @@ ENV WORKSPACE /home/illuminate/code_env WORKDIR /home/illuminate/code_env
 
 WORKDIR /home/illuminate
 
-# Install python requirements. #################################################
-RUN pip2.7 install --user future
-
-RUN pip2.7 install --user                                                      \
-  future==0.16.0                                                               \
-  Flask==0.12.2                                                                \
-  Flask-SocketIO==2.9.2                                                        \
-  futures==3.1.1                                                               \
-  socketIO-client==0.7.2                                                       \
-  empy==3.3.2                                                                  \
-  toml==0.9.4                                                                  \
-  eventlet==0.23.0                                                             \
-  protobuf==3.5.2.post1                                                        \
-  pyzmq==17.0.0                                                                \
-  zmq==0.0.0
-
-RUN rm -rf /home/illuminate/mavlink-router
-
 # Use a stable version of bazel. ###############################################
 WORKDIR /tmp
 USER root
@@ -123,6 +105,30 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 421C365BD9F
 RUN apt-get update && apt-get install -y ros-melodic-ros-base ros-melodic-mavros
 
 RUN printf "source /opt/ros/melodic/setup.bash" > /home/illuminate/.bashrc
+
+# Install python requirements. #################################################
+USER illuminate
+RUN pip3.7 install --user future
+
+RUN pip3.7 install --user                                                      \
+  future==0.16.0                                                               \
+  Flask==1.0.2                                                                 \
+  Flask-SocketIO==3.3.1                                                        \
+  futures==3.1.1                                                               \
+  socketIO-client==0.7.2                                                       \
+  empy==3.3.2                                                                  \
+  toml==0.9.4                                                                  \
+  eventlet==0.23.0                                                             \
+  google==2.0.1                                                                \
+  protobuf==3.6.1                                                              \
+  python-socketio==3.1.2                                                       \
+  python-engineio==3.4.2                                                       \
+  pyzmq==17.0.0                                                                \
+  Werkzeug==0.14.1                                                             \
+  eventlet==0.23.0                                                             \
+  zmq==0.0.0
+
+USER root
 
 WORKDIR /home/illuminate/code_env
 

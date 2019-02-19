@@ -97,7 +97,7 @@ if [[ -z $TRAVIS ]]
 then
   docker build $BUILD_FLAGS tools/dockerfiles/build_env
 else
-  docker build $BUILD_FLAGS tools/dockerfiles/build_env > /dev/null
+  docker build $BUILD_FLAGS tools/dockerfiles/build_env
 fi
 
 if [ $? -ne 0 ]

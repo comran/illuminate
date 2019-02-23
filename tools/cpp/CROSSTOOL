@@ -71,7 +71,6 @@ toolchain {
 
   compiler_flag: "-Wno-error=unused-command-line-argument"
   linker_flag: "-lstdc++"
-  linker_flag: "-ldl"
   # linker_flag: "-lc++"
   # linker_flag: "-lprofiler"
   linker_flag: "-B/usr/bin/"
@@ -299,7 +298,6 @@ toolchain {
   linker_flag: "-Wl,-rpath-link,external/raspi_toolchain/arm-linux-gnueabihf/lib"
   linker_flag: "-Bexternal/raspi_toolchain/bin"
   linker_flag: "-lstdc++"
-  linker_flag: "-ldl"
 
   feature {
     name: "opt"

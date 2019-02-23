@@ -79,7 +79,7 @@ void Display::RunIteration() {
               client_.routines_order()[current_routine_];
           programmed_routine_.LoadRoutineFromProto(
               client_.routines()[routine_to_run]);
-          next_state = RUN_ROUTINES;
+          next_state = RUN_PROGRAMMED_ROUTINES;
         } else {
           next_state = BLANK;
         }
@@ -88,13 +88,21 @@ void Display::RunIteration() {
       break;
 
     case BLANK:
+      if(client_.routines_order().size() < 1) {
+        next_state = RUN_PROGRAMMED_ROUTINES;
+      }
+
       for (int i = 0; i < kNumberOfLeds; i++) {
         visualizer_->SetLed(i, 0, 0, 0);
       }
 
       break;
 
-    case RUN_ROUTINES:
+    case RUN_PROGRAMMED_ROUTINES:
+      if(client_.routines_order().size() < 1) {
+        next_state = BLANK;
+      }
+
       programmed_routine_.DrawFrame(*visualizer_);
 
       if (programmed_routine_.AnimationComplete()) {

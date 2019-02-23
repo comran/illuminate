@@ -27,6 +27,7 @@ DOCKER_EXEC_KILL_SCRIPT = "./tools/scripts/build_env/exec_kill.sh "
 LINT_CHECK_SCRIPT = "./tools/scripts/lint/check_format.sh"
 LINT_FORMAT_SCRIPT = "./tools/scripts/lint/format.sh"
 NUKE_SCRIPT = "./tools/scripts/nuke.sh"
+DEPLOY_SCRIPT = "./tools/scripts/build_env/deploy.sh "
 
 # Command chains.
 if "CONTINUOUS_INTEGRATION" in os.environ \
@@ -181,11 +182,6 @@ def run_display_build(args=None, show_complete=True):
     print_update("Building lib directory...")
     run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " //lib/...")
 
-    print_update("Copy over finished binaries...")
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "rm -rf /home/illuminate/code_env/tools/cache/build_output/*")
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "mkdir -p /home/illuminate/code_env/tools/cache/build_output")
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "cp -r bazel-out/k8-fastbuild/bin /home/illuminate/code_env/tools/cache/build_output")
-
     if show_complete:
         print_update("\n\nBuild successful :^)", \
                 msg_type="SUCCESS")
@@ -195,13 +191,16 @@ def run_display_run(args=None, show_complete=True):
     print_update("Building display for AMD64...")
     run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + BAZEL_BUILD + " //src/display:display")
 
-    print_update("Copy over finished binaries...")
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "rm -rf /home/illuminate/code_env/tools/cache/build_output/*")
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "mkdir -p /home/illuminate/code_env/tools/cache/build_output")
-    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + "cp -r bazel-out/k8-fastbuild/bin /home/illuminate/code_env/tools/cache/build_output")
-
-    processes.spawn_process("./tools/cache/build_output/bin/src/display/display")
+    processes.spawn_process("./tools/cache/bazel/execroot/com_illuminate/bazel-out/k8-fastbuild/bin/src/display/display")
     processes.wait_for_complete()
+
+
+def run_display_deploy(args=None):
+    run_display_build(show_complete=False)
+
+    print_update("Deploying to raspi...")
+    run_cmd_exit_failure(DOCKER_EXEC_SCRIPT + DEPLOY_SCRIPT \
+            + "src/display/display")
 
 
 def run_editor_mapping(args=None, show_complete=True):
@@ -375,6 +374,8 @@ if __name__ == '__main__':
     display_build_parser.set_defaults(func=run_display_build)
     display_run_parser = display_subparser.add_parser('run')
     display_run_parser.set_defaults(func=run_display_run)
+    display_deploy_parser = display_subparser.add_parser('deploy')
+    display_deploy_parser.set_defaults(func=run_display_deploy)
 
     editor_parser = subparsers.add_parser('editor')
     editor_subparser = editor_parser.add_subparsers()

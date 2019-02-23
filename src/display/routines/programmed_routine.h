@@ -9,14 +9,12 @@ class ProgrammedRoutine : public Routine {
   ProgrammedRoutine() : routine_(nullptr), frame_(0) {}
 
   void DrawFrame(Visualizer &visualizer) {
-    // ::std::cout << "Drawing frame " << frame_ << ::std::endl;
     if (routine_ == nullptr) {
       return;
     }
 
     ::src::Frame current_frame = routine_->frames(frame_);
     frame_ = (frame_ + 1) % routine_->frames_size();
-    // ::std::cout << routine_->frames_size() << ::std::endl;
 
     for (int i = 0; i < current_frame.pixel_colors_size(); i++) {
       int32_t color = current_frame.pixel_colors(i);

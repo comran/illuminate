@@ -128,6 +128,8 @@ RUN pip3.7 install --user                                                      \
   eventlet==0.23.0                                                             \
   zmq==0.0.0
 
+RUN ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+
 USER root
 
 WORKDIR /home/illuminate/code_env

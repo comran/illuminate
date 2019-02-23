@@ -37,7 +37,7 @@ class Display {
     DOWNLOADING_ROUTINES = 2,
     WAIT_FOR_DOWNLOAD_TO_COMPLETE = 3,
     BLANK = 4,
-    RUN_ROUTINES = 5,
+    RUN_PROGRAMMED_ROUTINES = 5,
   };
 
  private:

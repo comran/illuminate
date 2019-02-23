@@ -6,10 +6,8 @@
 #include "src/messages.pb.h"
 
 namespace {
-static const int kLedStripTargetFrequency = 800000;
-static const int kLedStripGpioPin = 18;
-static const int kLedStripDma = 5;
-static const int kLedStripType = WS2811_STRIP_GBR;
+static const int kLedStripGpioPin = 10;
+static const int kLedStripDma = 10;
 } // namespace
 
 class LedStrip : public Visualizer {
@@ -21,7 +19,7 @@ class LedStrip : public Visualizer {
         kLedStripGpioPin, // GPIO number
         0,                // Invert output signal
         number_of_leds,   // Number of LEDs, 0 if channel is unused.
-        kLedStripType,    // Strip color layout
+        WS2811_STRIP_GBR, // Strip color layout
         leds,             // LED buffer
         255,              // Brightness value
         0,                // White shift value
@@ -35,7 +33,7 @@ class LedStrip : public Visualizer {
         kLedStripGpioPin, // GPIO number
         0,                // Invert output signal
         0,                // Number of LEDs, 0 if channel is unused.
-        kLedStripType,    // Strip color layout
+        WS2811_STRIP_GBR, // Strip color layout
         leds,             // LED buffer
         255,              // Brightness value
         0,                // White shift value
@@ -49,7 +47,7 @@ class LedStrip : public Visualizer {
         0,                        // Render wait time
         nullptr,                  // Device
         nullptr,                  // Raspi hardware information
-        kLedStripTargetFrequency, // Required output frequency
+        WS2811_TARGET_FREQ,       // Required output frequency
         kLedStripDma,             // DMA number
         {channel_0, channel_1}    // Channels
     };

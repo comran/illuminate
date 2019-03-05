@@ -18,14 +18,19 @@ namespace src {
 namespace display {
 namespace {
 static constexpr int kFramesPerSecond = 30;
-static constexpr int kNumberOfLeds = 265;
+static constexpr int kNumberOfLeds = 551;
 static const bool kPrintFps = false;
+#ifdef RASPI_DEPLOYMENT
 static const char *const kServerUrl = "http://127.0.0.1:5000";
+#else
+static const char *const kServerUrl = "http://comran.org:5000";
+//static const char *const kServerUrl = "http://localhost:5000";
+#endif
 } // namespace
 
 class Display {
  public:
-  Display();
+  Display(int led_override);
 
   void Run();
   void RunIteration();
@@ -33,11 +38,12 @@ class Display {
 
   enum State {
     STARTUP = 0,
-    CONNECTING_TO_SERVER = 1,
-    DOWNLOADING_ROUTINES = 2,
-    WAIT_FOR_DOWNLOAD_TO_COMPLETE = 3,
-    BLANK = 4,
-    RUN_PROGRAMMED_ROUTINES = 5,
+    LED_OVERRIDE = 1,
+    CONNECTING_TO_SERVER = 2,
+    DOWNLOADING_ROUTINES = 3,
+    WAIT_FOR_DOWNLOAD_TO_COMPLETE = 4,
+    BLANK = 5,
+    RUN_PROGRAMMED_ROUTINES = 6,
   };
 
  private:
@@ -54,6 +60,7 @@ class Display {
   int current_routine_;
   client::Client client_;
   ProgrammedRoutine programmed_routine_;
+  int led_override_;
 };
 
 } // namespace display

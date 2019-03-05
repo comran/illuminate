@@ -117,6 +117,7 @@ RUN pip3.7 install --user                                                      \
   futures==3.1.1                                                               \
   socketIO-client==0.7.2                                                       \
   empy==3.3.2                                                                  \
+  opencv-python==4.0.0.21                                                      \
   toml==0.9.4                                                                  \
   eventlet==0.23.0                                                             \
   google==2.0.1                                                                \

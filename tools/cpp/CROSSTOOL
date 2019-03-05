@@ -186,6 +186,7 @@ toolchain {
 
   # Pretty much everything needs this, including parts of the glibc STL...
   linker_flag: "-lm"
+  linker_flag: "-ldl"
 
   # Enable coloring even if there's no attached terminal. Bazel removes the
   # escape sequences if --nocolor is specified.

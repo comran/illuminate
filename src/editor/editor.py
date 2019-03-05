@@ -202,7 +202,8 @@ if __name__ == '__main__':
 
     routine_parser.set_defaults(func=run_routine)
 
-    socket = SocketIO('0.0.0.0', 5000)
+    #socket = SocketIO('0.0.0.0', 5000)
+    socket = SocketIO('comran.org', 5000)
     socket.on('connect', on_connect)
     socket.on('disconnect', on_disconnect)
     socket.on('reconnect', on_reconnect)

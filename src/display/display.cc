@@ -3,7 +3,7 @@
 namespace src {
 namespace display {
 
-Display::Display() :
+Display::Display(int led_override) :
 #ifdef RASPI_DEPLOYMENT
     visualizer_(new LedStrip(kNumberOfLeds)),
 #else
@@ -14,7 +14,8 @@ Display::Display() :
     last_iteration_(::std::numeric_limits<double>::infinity()),
     state_(STARTUP),
     current_routine_(-1),
-    client_(kServerUrl) {
+    client_(kServerUrl),
+    led_override_(led_override) {
 }
 
 void Display::Run() {
@@ -38,16 +39,42 @@ void Display::RunIteration() {
   switch (state_) {
     case STARTUP:
       for (int i = 0; i < kNumberOfLeds; i++) {
-        visualizer_->SetLed(i, 0, 0, 0);
+        visualizer_->SetLed(i, 255, 0, 0);
       }
 
       next_state = CONNECTING_TO_SERVER;
 
       break;
 
+    case LED_OVERRIDE:
+      static int current = 0;
+
+      for(int i = 0;i < kNumberOfLeds;i++) {
+        if(led_override_ == -1) {
+          if(current == i) {
+            visualizer_->SetLed(i, 0, 255, 0);
+          } else {
+            visualizer_->SetLed(i, 0, 0, 0);
+          }
+        } else if(i < led_override_) {
+          visualizer_->SetLed(i, 10, 0, 0);
+        } else if (i == led_override_) {
+          visualizer_->SetLed(i, 255, 255, 255);
+        } else {
+          visualizer_->SetLed(i, 0, 0, 0);
+        }
+      }
+
+      if(led_override_ == -1) {
+        ::std::cout << current << ::std::endl;
+        current = (current + 1) % 550;
+      }
+
+      break;
+
     case CONNECTING_TO_SERVER:
       for (int i = 0; i < kNumberOfLeds; i++) {
-        visualizer_->SetLed(i, 255, 0, 0);
+        visualizer_->SetLed(i, 255, 255, 0);
       }
 
       if (client_.connected()) {
@@ -64,7 +91,7 @@ void Display::RunIteration() {
 
     case WAIT_FOR_DOWNLOAD_TO_COMPLETE:
       for (int i = 0; i < kNumberOfLeds; i++) {
-        visualizer_->SetLed(i, 255, 255, 0);
+        visualizer_->SetLed(i, 0, 0, 255);
       }
 
       if (!client_.connected()) {
@@ -79,7 +106,13 @@ void Display::RunIteration() {
               client_.routines_order()[current_routine_];
           programmed_routine_.LoadRoutineFromProto(
               client_.routines()[routine_to_run]);
-          next_state = RUN_PROGRAMMED_ROUTINES;
+
+          if(led_override_ > -2) {
+            ::std::cout << led_override_ << ::std::endl;
+            next_state = LED_OVERRIDE;
+          } else {
+            next_state = RUN_PROGRAMMED_ROUTINES;
+          }
         } else {
           next_state = BLANK;
         }
@@ -114,9 +147,9 @@ void Display::RunIteration() {
             client_.routines()[routine_to_run]);
       }
 
-      if (!client_.connected()) {
-        next_state = CONNECTING_TO_SERVER;
-      }
+//    if (!client_.connected()) {
+//      next_state = CONNECTING_TO_SERVER;
+//    }
 
       break;
   }

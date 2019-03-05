@@ -11,6 +11,7 @@ rsync \
   -rvz \
   -e "ssh -p $PORT" \
   --progress \
+  --bwlimit=100 \
   "$LOCAL_BAZEL_RASPI_OUTPUT_ROOT/$1" "$USER@$HOST":"$REMOTE_PATH"
 
-ssh -p $PORT "$USER@$HOST" killall display || true
+#ssh -p $PORT "$USER@$HOST" killall display || true

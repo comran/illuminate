@@ -93,9 +93,11 @@ class Simulator : public Visualizer {
   }
 
   void SetLed(int led, unsigned char r, unsigned char g, unsigned char b) {
+    if (led >= number_of_leds_) {
+      return;
+    }
 
     uint32_t led_color = (b << 16) | (g << 8) | r;
-
     leds_[led] = led_color;
   }
 

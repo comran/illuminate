@@ -3,9 +3,12 @@
 #include <atomic>
 #include <iomanip>
 #include <iostream>
+#include <stdlib.h>
 
 #include "lib/phased_loop/phased_loop.h"
 #include "src/display/client/client.h"
+#include "src/display/routines/line_highlight_routine.h"
+#include "src/display/routines/noise_routine.h"
 #include "src/display/routines/programmed_routine.h"
 
 #ifdef RASPI_DEPLOYMENT
@@ -23,8 +26,8 @@ static const bool kPrintFps = false;
 #ifdef RASPI_DEPLOYMENT
 static const char *const kServerUrl = "http://127.0.0.1:5000";
 #else
-static const char *const kServerUrl = "http://comran.org:5000";
-//static const char *const kServerUrl = "http://localhost:5000";
+// static const char *const kServerUrl = "http://comran.org:5000";
+static const char *const kServerUrl = "http://localhost:5000";
 #endif
 } // namespace
 
@@ -44,6 +47,7 @@ class Display {
     WAIT_FOR_DOWNLOAD_TO_COMPLETE = 4,
     BLANK = 5,
     RUN_PROGRAMMED_ROUTINES = 6,
+    AUTISM_SPEAKS = 7,
   };
 
  private:
@@ -59,8 +63,11 @@ class Display {
   State state_;
   int current_routine_;
   client::Client client_;
-  ProgrammedRoutine programmed_routine_;
+  routines::ProgrammedRoutine programmed_routine_;
+  routines::LineHighlightRoutine line_highlight_routine_;
+  routines::NoiseRoutine noise_routine_;
   int led_override_;
+  double current_runtime_;
 };
 
 } // namespace display

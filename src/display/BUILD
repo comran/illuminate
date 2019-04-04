@@ -24,7 +24,7 @@ cc_library(
   ],
   deps = [
     '//src/display/client:client',
-    '//src/display/routines:programmed_routine',
+    '//src/display/routines:routines',
     '//lib/phased_loop:phased_loop',
 
     "@rpi_ws281x//:rpi_ws281x",

@@ -2,11 +2,20 @@
 
 #include "routine.h"
 
+#include <iostream>
+
 #include "src/messages.pb.h"
+
+namespace src {
+namespace display {
+namespace routines {
 
 class ProgrammedRoutine : public Routine {
  public:
-  ProgrammedRoutine() : routine_(nullptr), frame_(0) {}
+  ProgrammedRoutine(int number_of_leds) :
+      Routine(number_of_leds),
+      routine_(nullptr),
+      frame_(0) {}
 
   void DrawFrame(Visualizer &visualizer) {
     if (routine_ == nullptr) {
@@ -26,20 +35,17 @@ class ProgrammedRoutine : public Routine {
     }
   }
 
-  bool AnimationComplete() {
-    if (routine_ == nullptr) {
-      return true;
-    }
-
-    return frame_ >= routine_->frames_size() - 2;
-  }
-
   void LoadRoutineFromProto(::src::Routine &routine) {
     routine_ = &routine;
-    frame_ = 0;
+    frame_ = rand() % routine_->frames_size();
+    Reset();
   }
 
  private:
   ::src::Routine *routine_;
   int frame_;
 };
+
+} // namespace routines
+} // namespace display
+} // namespace src

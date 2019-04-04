@@ -12,7 +12,7 @@ static const int kLedStripDma = 10;
 
 class LedStrip : public Visualizer {
  public:
-  LedStrip(int number_of_leds) {
+  LedStrip(int number_of_leds) : number_of_leds_(number_of_leds) {
     ws2811_led_t leds[number_of_leds];
 
     ws2811_channel_t channel_0 = {
@@ -44,12 +44,12 @@ class LedStrip : public Visualizer {
     };
 
     leds_ = {
-        0,                        // Render wait time
-        nullptr,                  // Device
-        nullptr,                  // Raspi hardware information
-        WS2811_TARGET_FREQ,       // Required output frequency
-        kLedStripDma,             // DMA number
-        {channel_0, channel_1}    // Channels
+        0,                     // Render wait time
+        nullptr,               // Device
+        nullptr,               // Raspi hardware information
+        WS2811_TARGET_FREQ,    // Required output frequency
+        kLedStripDma,          // DMA number
+        {channel_0, channel_1} // Channels
     };
 
     ws2811_return_t ret = ws2811_init(&leds_);
@@ -69,13 +69,20 @@ class LedStrip : public Visualizer {
 
     return true;
   }
+
   void SetLed(int led, unsigned char r, unsigned char g, unsigned char b) {
+    if (led >= number_of_leds_) {
+      return;
+    }
+
     ws2811_led_t led_color = (b << 16) | (g << 8) | r;
 
     leds_.channel[0].leds[led] = led_color;
   }
+
   void SetPixelLayout(::src::PixelLayout &pixel_layout) { return; }
 
  private:
   ws2811_t leds_;
+  int number_of_leds_;
 };

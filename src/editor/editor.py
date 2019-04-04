@@ -9,6 +9,7 @@ import hashlib
 import sys
 sys.path.append('tools/cache/proto')
 sys.dont_write_bytecode = True
+import operator
 import messages_pb2
 
 socket = None
@@ -18,6 +19,12 @@ minx = None
 miny = None
 maxx = None
 maxy = None
+
+class PixelLocationIndexed:
+    def __init__(self, x, y, index):
+        self.x = x
+        self.y = y
+        self.index = index
 
 def on_connect():
     print('connected.')
@@ -29,6 +36,7 @@ def on_reconnect():
     print('reconnect')
 
 def run_mapping(args):
+    # Wait for connection to server.
     while True:
         if socket.connected:
             break
@@ -54,6 +62,7 @@ def run_mapping(args):
     pixel_set = dict()
 
     pixel_layout = messages_pb2.PixelLayout()
+    pixel_locations = list()
 
     if width < height:
         if height > 0:
@@ -76,6 +85,7 @@ def run_mapping(args):
 
         line_split = line.split(",")
         seg = ""
+
         for pixel in line_split:
             if pixel.lstrip() == "":
                 seg += " "
@@ -87,15 +97,27 @@ def run_mapping(args):
                 pixel_set[pixel] = True
 
                 # Add pixel location to protobuf.
-                pixel_location = pixel_layout.pixel_locations.add()
-                pixel_location.x = x / width
-                pixel_location.y = y / height
-                pixel_location.index = int(pixel)
-
-                print(str(pixel_location.index) + ": " + str(pixel_location.x))
+                pixel_locations.append(PixelLocationIndexed( \
+                    x / width, \
+                    y / height, \
+                    int(pixel)))
             x += 1
         y = y + 1
     
+    pixel_locations.sort(key=operator.attrgetter('index'))
+
+    i = 0
+    for pixel_location in pixel_locations:
+        pixel_location_proto = pixel_layout.pixel_locations.add()
+        pixel_location_proto.x = pixel_locations[i].x
+        pixel_location_proto.y = pixel_locations[i].y
+
+        print(str(i) + ": " \
+            + str(pixel_locations[i].x) \
+            + ", " + str(pixel_locations[i].y))
+
+        i += 1
+
     data = base64.b64encode(pixel_layout.SerializeToString()).decode("ascii")
     socket.emit("set_pixel_locations", data)
 
@@ -127,19 +149,19 @@ def run_routine(args):
 
     if miny > maxy or miny < 0:
         print("invalid y range: [" + str(miny) + ", " + str(maxy) + "]")
-        
+
 
     def extraction(pixel_layout_data):
         global routine
 
         socket.emit("set_routine_start")
 
-
         pixel_layout = messages_pb2.PixelLayout()
         pixel_layout.ParseFromString(base64.b64decode(pixel_layout_data))
 
         success,image = video.read()
         count = 0
+
         while success:
             success, image = video.read()
             if not success:
@@ -202,8 +224,8 @@ if __name__ == '__main__':
 
     routine_parser.set_defaults(func=run_routine)
 
-    #socket = SocketIO('0.0.0.0', 5000)
-    socket = SocketIO('comran.org', 5000)
+    socket = SocketIO('0.0.0.0', 5000)
+    # socket = SocketIO('comran.org', 5000)
     socket.on('connect', on_connect)
     socket.on('disconnect', on_disconnect)
     socket.on('reconnect', on_reconnect)

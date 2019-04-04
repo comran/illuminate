@@ -1,24 +1,16 @@
 package(default_visibility = ['//visibility:public'])
 
 cc_library(
-  name = 'routine',
+  name = 'routines',
   visibility = ['//visibility:public'],
   hdrs = [
-    'routine.h'
+    'routine.h',
+    'programmed_routine.h',
+    'line_highlight_routine.h',
+    'noise_routine.h',
   ],
   deps = [
     "//src/display/visualizer:visualizer",
-  ],
-)
-
-cc_library(
-  name = 'programmed_routine',
-  visibility = ['//visibility:public'],
-  hdrs = [
-    'programmed_routine.h'
-  ],
-  deps = [
-    ':routine',
     '//src:messages_cpp'
   ],
 )

@@ -15,7 +15,6 @@ message Routine {
 message PixelLocation {
   required double x                                                         = 1;
   required double y                                                         = 2;
-  required int32 index                                                      = 3;
 }
 
 message PixelLayout {

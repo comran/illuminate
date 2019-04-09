@@ -51,13 +51,12 @@ void Display::RunIteration() {
   time_t theTime = time(NULL);
   struct tm *aTime = localtime(&theTime);
   int hour = aTime->tm_hour;
-
-  if (hour > 23 || hour < 5) {
+  if (hour >= 23 || hour <= 9) {
+    // Dim mode.
     visualizer_->set_brightness(0.5);
-    ::std::cout << "Setting dim display." << ::std::endl;
   } else {
+    // Full brightness mode.
     visualizer_->set_brightness(1.0);
-    ::std::cout << "Setting bright display." << ::std::endl;
   }
 
   switch (state_) {

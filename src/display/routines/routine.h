@@ -8,7 +8,8 @@ namespace routines {
 namespace {
 static const int kLightBlue = 0x4444FF;
 static const int kBlue = 0x0000FF;
-static const int kDimBlue = 0x0000AA;
+static const int kDimBlue = 0x000066;
+static const int kBlack = 0x000000;
 static const int kWhite = 0xFFFFFF;
 } // namespace
 
@@ -39,12 +40,14 @@ class Routine {
     return true;
   }
 
- protected:
   void Reset() {
     started_ = false;
     start_time_ = 0;
   }
 
+  virtual ::std::string name() = 0;
+
+ protected:
   int number_of_leds() { return number_of_leds_; }
 
  private:

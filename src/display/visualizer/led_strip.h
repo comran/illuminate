@@ -2,6 +2,8 @@
 
 #include "ws2811.h"
 
+#include <cmath>
+
 #include "src/display/visualizer/visualizer.h"
 #include "src/messages.pb.h"
 
@@ -12,7 +14,9 @@ static const int kLedStripDma = 10;
 
 class LedStrip : public Visualizer {
  public:
-  LedStrip(int number_of_leds) : number_of_leds_(number_of_leds) {
+  LedStrip(int number_of_leds) :
+      number_of_leds_(number_of_leds),
+      brightness_(1) {
     ws2811_led_t leds[number_of_leds];
 
     ws2811_channel_t channel_0 = {
@@ -75,9 +79,15 @@ class LedStrip : public Visualizer {
       return;
     }
 
-    ws2811_led_t led_color = (b << 16) | (g << 8) | r;
+    ws2811_led_t led_color = ((char)(b * brightness_) << 16) |
+                             ((char)(g * brightness_) << 8) |
+                             (char)(r * brightness_);
 
     leds_.channel[0].leds[led] = led_color;
+  }
+
+  void set_brightness(double brightness) {
+    brightness_ = ::std::max(::std::min(brightness, 1.0), 0.0);
   }
 
   void SetPixelLayout(::src::PixelLayout &pixel_layout) { return; }
@@ -85,4 +95,5 @@ class LedStrip : public Visualizer {
  private:
   ws2811_t leds_;
   int number_of_leds_;
+  double brightness_;
 };

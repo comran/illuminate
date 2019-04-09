@@ -8,10 +8,14 @@
 namespace src {
 namespace display {
 namespace routines {
+namespace {
+static const int kSpread = 10;
+static const int kTimeDivisor = 3;
+} // namespace
 
-class LineHighlightRoutine : public Routine {
+class MovieTheaterRoutine : public Routine {
  public:
-  LineHighlightRoutine(int number_of_leds) :
+  MovieTheaterRoutine(int number_of_leds) :
       Routine(number_of_leds),
       frame_(0) {}
 
@@ -19,8 +23,10 @@ class LineHighlightRoutine : public Routine {
     for (int i = 0; i < number_of_leds(); i++) {
       int color = kBlue;
 
-      if (::std::abs((frame_ % number_of_leds()) - i) < 10) {
+      if (((i + frame_ / kTimeDivisor) / kSpread) % 2 == 0) {
         color = kWhite;
+      } else {
+        color = kBlue;
       }
 
       visualizer.SetLed(i, color);
@@ -29,7 +35,7 @@ class LineHighlightRoutine : public Routine {
     frame_++;
   }
 
-  ::std::string name() { return "line_highlight"; }
+  ::std::string name() { return "movie_theater"; }
 
  private:
   int frame_;

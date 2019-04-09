@@ -16,10 +16,14 @@ Display::Display(int led_override) :
     current_routine_(-1),
     client_(kServerUrl),
     programmed_routine_(kNumberOfLeds),
-    line_highlight_routine_(kNumberOfLeds),
-    noise_routine_(kNumberOfLeds),
     led_override_(led_override),
     current_runtime_(0) {
+
+  dynamic_routines_.push_back(
+      new routines::LineHighlightRoutine(kNumberOfLeds));
+  dynamic_routines_.push_back(new routines::OutlineRoutine(kNumberOfLeds));
+  dynamic_routines_.push_back(new routines::MovieTheaterRoutine(kNumberOfLeds));
+  // dynamic_routines_.push_back(new routines::FadeRoutine(kNumberOfLeds));
 }
 
 void Display::Run() {
@@ -40,10 +44,26 @@ void Display::RunIteration() {
     Quit();
   }
 
+  bool animation_complete = false;
+
+  // Adjust brightness depending on time of night to avoid annoying the guys
+  // with windows facing the sign.
+  time_t theTime = time(NULL);
+  struct tm *aTime = localtime(&theTime);
+  int hour = aTime->tm_hour;
+
+  if (hour > 23 || hour < 5) {
+    visualizer_->set_brightness(0.5);
+    ::std::cout << "Setting dim display." << ::std::endl;
+  } else {
+    visualizer_->set_brightness(1.0);
+    ::std::cout << "Setting bright display." << ::std::endl;
+  }
+
   switch (state_) {
     case STARTUP:
       for (int i = 0; i < kNumberOfLeds; i++) {
-        visualizer_->SetLed(i, 255, 0, 0);
+        visualizer_->SetLed(i, 0, 0, 0);
       }
 
       next_state = CONNECTING_TO_SERVER;
@@ -78,7 +98,7 @@ void Display::RunIteration() {
 
     case CONNECTING_TO_SERVER:
       for (int i = 0; i < kNumberOfLeds; i++) {
-        visualizer_->SetLed(i, 255, 255, 0);
+        visualizer_->SetLed(i, 0, 0, 100);
       }
 
       if (client_.connected()) {
@@ -104,29 +124,15 @@ void Display::RunIteration() {
 
       if (client_.FetchFinished()) {
         visualizer_->SetPixelLayout(client_.pixel_layout());
-        if (client_.routines_order().size() > 0) {
-          current_routine_ = 0;
-          ::std::string routine_to_run =
-              client_.routines_order()[current_routine_];
-          programmed_routine_.LoadRoutineFromProto(
-              client_.routines()[routine_to_run]);
 
-          if (led_override_ > -2) {
-            ::std::cout << led_override_ << ::std::endl;
-            next_state = LED_OVERRIDE;
-          } else {
-            next_state = RUN_PROGRAMMED_ROUTINES;
-          }
-        } else {
-          next_state = BLANK;
-        }
+        animation_complete = true;
       }
 
       break;
 
     case BLANK:
       if (client_.routines_order().size() < 1) {
-        next_state = RUN_PROGRAMMED_ROUTINES;
+        next_state = RUN_PROGRAMMED_ROUTINE;
       }
 
       for (int i = 0; i < kNumberOfLeds; i++) {
@@ -135,9 +141,7 @@ void Display::RunIteration() {
 
       break;
 
-    case RUN_PROGRAMMED_ROUTINES:
-      next_state = AUTISM_SPEAKS;
-
+    case RUN_PROGRAMMED_ROUTINE:
       if (client_.routines_order().size() < 1) {
         next_state = BLANK;
       }
@@ -145,25 +149,53 @@ void Display::RunIteration() {
       programmed_routine_.DrawFrame(*visualizer_);
 
       if (programmed_routine_.AnimationComplete(current_runtime_)) {
-        current_routine_ = rand() % client_.routines_order().size();
-        ::std::string routine_to_run =
-            client_.routines_order()[current_routine_];
-        programmed_routine_.LoadRoutineFromProto(
-            client_.routines()[routine_to_run]);
-
-        current_runtime_ = 30 + rand() % 60;
-
-        ::std::cout << "Playing routine \"" << routine_to_run
-                    << "\" with runtime " << current_runtime_ << ::std::endl;
+        animation_complete = true;
       }
 
       break;
 
-    case AUTISM_SPEAKS:
-      line_highlight_routine_.DrawFrame(*visualizer_);
-      // noise_routine_.DrawFrame(*visualizer_);
+    case RUN_DYNAMIC_ROUTINE:
+      routines::Routine *dynamic_routine = dynamic_routines_[current_routine_];
+      dynamic_routine->DrawFrame(*visualizer_);
+
+      if (dynamic_routine->AnimationComplete(current_runtime_)) {
+        animation_complete = true;
+      }
 
       break;
+  }
+
+  // Select the next state if the current animation completes.
+  if (animation_complete) {
+    int all_routines_count =
+        client_.routines_order().size() + dynamic_routines_.size();
+
+    current_routine_ = rand() % all_routines_count;
+
+    if (all_routines_count == 0) {
+      next_state = BLANK;
+    } else if (current_routine_ <
+               static_cast<int>(client_.routines_order().size())) {
+      // Select a static programmed routine.
+      ::std::string routine_to_run = client_.routines_order()[current_routine_];
+      programmed_routine_.LoadRoutineFromProto(
+          client_.routines()[routine_to_run]);
+
+      current_runtime_ = 30;
+
+      ::std::cout << "Playing routine \"" << routine_to_run
+                  << "\" with runtime " << current_runtime_ << ::std::endl;
+
+      next_state = RUN_PROGRAMMED_ROUTINE;
+    } else {
+      current_routine_ -= client_.routines_order().size();
+      dynamic_routines_[current_routine_]->Reset();
+      next_state = RUN_DYNAMIC_ROUTINE;
+
+      ::std::cout << "Playing dynamic routine \""
+                  << dynamic_routines_[current_routine_]->name()
+                  << "\" with runtime " << current_runtime_ << ::std::endl;
+    }
   }
 
   state_ = next_state;

@@ -4,11 +4,15 @@
 #include <iomanip>
 #include <iostream>
 #include <stdlib.h>
+#include <time.h>
+#include <vector>
 
 #include "lib/phased_loop/phased_loop.h"
 #include "src/display/client/client.h"
+#include "src/display/routines/fade_routine.h"
 #include "src/display/routines/line_highlight_routine.h"
-#include "src/display/routines/noise_routine.h"
+#include "src/display/routines/movie_theater_routine.h"
+#include "src/display/routines/outline_routine.h"
 #include "src/display/routines/programmed_routine.h"
 
 #ifdef RASPI_DEPLOYMENT
@@ -23,6 +27,7 @@ namespace {
 static constexpr int kFramesPerSecond = 30;
 static constexpr int kNumberOfLeds = 551;
 static const bool kPrintFps = false;
+static const int kNumberOfDynamicRoutines = 2;
 #ifdef RASPI_DEPLOYMENT
 static const char *const kServerUrl = "http://127.0.0.1:5000";
 #else
@@ -46,8 +51,8 @@ class Display {
     DOWNLOADING_ROUTINES = 3,
     WAIT_FOR_DOWNLOAD_TO_COMPLETE = 4,
     BLANK = 5,
-    RUN_PROGRAMMED_ROUTINES = 6,
-    AUTISM_SPEAKS = 7,
+    RUN_PROGRAMMED_ROUTINE = 6,
+    RUN_DYNAMIC_ROUTINE = 7,
   };
 
  private:
@@ -63,9 +68,8 @@ class Display {
   State state_;
   int current_routine_;
   client::Client client_;
+  ::std::vector<::src::display::routines::Routine *> dynamic_routines_;
   routines::ProgrammedRoutine programmed_routine_;
-  routines::LineHighlightRoutine line_highlight_routine_;
-  routines::NoiseRoutine noise_routine_;
   int led_override_;
   double current_runtime_;
 };

@@ -7,7 +7,9 @@ cc_library(
     'routine.h',
     'programmed_routine.h',
     'line_highlight_routine.h',
-    'noise_routine.h',
+    'outline_routine.h',
+    'movie_theater_routine.h',
+    'fade_routine.h',
   ],
   deps = [
     "//src/display/visualizer:visualizer",

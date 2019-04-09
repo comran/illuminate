@@ -41,6 +41,8 @@ class ProgrammedRoutine : public Routine {
     Reset();
   }
 
+  ::std::string name() { return routine_->name(); }
+
  private:
   ::src::Routine *routine_;
   int frame_;

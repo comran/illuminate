@@ -20,5 +20,7 @@ class Visualizer {
   virtual void SetLed(int led, unsigned char r, unsigned char g,
                       unsigned char b) = 0;
 
+  virtual void set_brightness(double brightness) = 0;
+
   virtual void SetPixelLayout(::src::PixelLayout &pixel_layout) = 0;
 };

@@ -22,6 +22,7 @@ class Simulator : public Visualizer {
       sdl_renderer_(nullptr),
       window_width_(0),
       window_height_(0),
+      brightness_(1),
       pixel_layout_(nullptr) {
 
     if (SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -97,9 +98,13 @@ class Simulator : public Visualizer {
       return;
     }
 
-    uint32_t led_color = (b << 16) | (g << 8) | r;
+    uint32_t led_color = ((char)(b * brightness_) << 16) |
+                         ((char)(g * brightness_) << 8) |
+                         (char)(r * brightness_);
     leds_[led] = led_color;
   }
+
+  void set_brightness(double brightness) { brightness_ = brightness; }
 
   void SetPixelLayout(::src::PixelLayout &pixel_layout) {
     // Destroy old window.
@@ -136,6 +141,8 @@ class Simulator : public Visualizer {
 
   int window_width_;
   int window_height_;
+
+  double brightness_;
 
   ::src::PixelLayout *pixel_layout_;
 };

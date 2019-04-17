@@ -24,7 +24,7 @@ RUN apt-get update -qq                                                      && \
     build-essential                                                            \
     ca-certificates-java                                                       \
     check                                                                      \
-    clang-3.9                                                                  \
+    clang-6.0                                                                  \
     clang-format-7                                                             \
     cmake                                                                      \
     g++                                                                        \

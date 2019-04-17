@@ -67,11 +67,13 @@ class Display {
 
   State state_;
   int current_routine_;
+  int last_routine_;
   client::Client client_;
   ::std::vector<::src::display::routines::Routine *> dynamic_routines_;
   routines::ProgrammedRoutine programmed_routine_;
   int led_override_;
   double current_runtime_;
+  bool printed_dimmed_;
 };
 
 } // namespace display

@@ -14,10 +14,12 @@ Display::Display(int led_override) :
     last_iteration_(::std::numeric_limits<double>::infinity()),
     state_(STARTUP),
     current_routine_(-1),
+    last_routine_(-1),
     client_(kServerUrl),
     programmed_routine_(kNumberOfLeds),
     led_override_(led_override),
-    current_runtime_(0) {
+    current_runtime_(0),
+    printed_dimmed_(false) {
 
   dynamic_routines_.push_back(
       new routines::LineHighlightRoutine(kNumberOfLeds));
@@ -28,6 +30,12 @@ Display::Display(int led_override) :
 
 void Display::Run() {
   running_ = true;
+
+  time_t theTime = time(NULL);
+  struct tm *aTime = localtime(&theTime);
+  int hour = aTime->tm_hour;
+
+  ::std::cout << "hour is " << hour << ::std::endl;
 
   while (running_) {
     RunIteration();
@@ -53,10 +61,16 @@ void Display::RunIteration() {
   int hour = aTime->tm_hour;
   if (hour >= 23 || hour <= 9) {
     // Dim mode.
-    visualizer_->set_brightness(0.5);
+    visualizer_->set_brightness(0.40);
+
+    if(!printed_dimmed_) {
+      ::std::cout << "Late at night; entering dimmed mode." << ::std::endl;
+      printed_dimmed_ = true;
+    }
   } else {
     // Full brightness mode.
     visualizer_->set_brightness(1.0);
+    printed_dimmed_ = false;
   }
 
   switch (state_) {
@@ -171,16 +185,28 @@ void Display::RunIteration() {
 
     current_routine_ = rand() % all_routines_count;
 
+    // Don't repeat routines back-to-back.
+    if(current_routine_ == last_routine_) {
+      current_routine_ = (current_routine_ + 1) % all_routines_count;
+    }
+
+    last_routine_ = current_routine_;
+
     if (all_routines_count == 0) {
       next_state = BLANK;
     } else if (current_routine_ <
                static_cast<int>(client_.routines_order().size())) {
+
       // Select a static programmed routine.
       ::std::string routine_to_run = client_.routines_order()[current_routine_];
       programmed_routine_.LoadRoutineFromProto(
           client_.routines()[routine_to_run]);
 
-      current_runtime_ = 30;
+      if(routine_to_run == "rotate") {
+        current_runtime_ = 7;
+      } else {
+        current_runtime_ = 30;
+      }
 
       ::std::cout << "Playing routine \"" << routine_to_run
                   << "\" with runtime " << current_runtime_ << ::std::endl;

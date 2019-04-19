@@ -31,12 +31,6 @@ Display::Display(int led_override) :
 void Display::Run() {
   running_ = true;
 
-  time_t theTime = time(NULL);
-  struct tm *aTime = localtime(&theTime);
-  int hour = aTime->tm_hour;
-
-  ::std::cout << "hour is " << hour << ::std::endl;
-
   while (running_) {
     RunIteration();
     phased_loop_.SleepUntilNext();
@@ -44,6 +38,11 @@ void Display::Run() {
 }
 
 void Display::RunIteration() {
+  time_t theTime = time(NULL);
+  struct tm *aTime = localtime(&theTime);
+  int hour = aTime->tm_hour;
+  int day_of_month = aTime->tm_mday;
+  int month = aTime->tm_mon;
   CheckFps();
 
   State next_state = state_;
@@ -56,14 +55,13 @@ void Display::RunIteration() {
 
   // Adjust brightness depending on time of night to avoid annoying the guys
   // with windows facing the sign.
-  time_t theTime = time(NULL);
-  struct tm *aTime = localtime(&theTime);
-  int hour = aTime->tm_hour;
+
+  visualizer_->set_brightness(1.0);
   if (hour >= 23 || hour <= 9) {
     // Dim mode.
     visualizer_->set_brightness(0.40);
 
-    if(!printed_dimmed_) {
+    if (!printed_dimmed_) {
       ::std::cout << "Late at night; entering dimmed mode." << ::std::endl;
       printed_dimmed_ = true;
     }
@@ -138,16 +136,16 @@ void Display::RunIteration() {
       if (client_.FetchFinished()) {
         visualizer_->SetPixelLayout(client_.pixel_layout());
 
+        ::std::cout << "hour is " << hour << ::std::endl;
+        ::std::cout << "day_of_month is " << day_of_month << ::std::endl;
+        ::std::cout << "month is " << month << ::std::endl;
+
         animation_complete = true;
       }
 
       break;
 
     case BLANK:
-      if (client_.routines_order().size() < 1) {
-        next_state = RUN_PROGRAMMED_ROUTINE;
-      }
-
       for (int i = 0; i < kNumberOfLeds; i++) {
         visualizer_->SetLed(i, 0, 0, 0);
       }
@@ -179,14 +177,73 @@ void Display::RunIteration() {
   }
 
   // Select the next state if the current animation completes.
-  if (animation_complete) {
+  while (animation_complete) {
+    bool blank = false;
+    if (month == 3) {
+      int day;
+      int hour_start = 12 + 9;
+      int hour_end = 4;
+
+      // TODO: Deal with days that wrap to the next month.
+
+      // Euroclub party.
+      day = 19;
+      if ((day_of_month == day && hour >= hour_start) ||
+          (day_of_month == (day + 1) && hour <= hour_end)) {
+        blank = true;
+      }
+
+      // Drip or drown.
+      day = 20;
+      if ((day_of_month == day && hour >= hour_start) ||
+          (day_of_month == (day + 1) && hour <= hour_end)) {
+        blank = true;
+      }
+    }
+
+    if (blank) {
+      next_state = BLANK;
+      break;
+    }
+
+    // Override on 420.
+    int day = 20;
+    if (month == 3 && ((day_of_month == day && hour > 12) ||
+                       (day_of_month == (day + 1) && hour < 12))) {
+      ::std::string found_routine = "";
+
+      int i = 0;
+      for (::std::string routine : client_.routines_order()) {
+        if (routine == "rasta") {
+          found_routine = routine;
+          break;
+        }
+
+        i++;
+      }
+
+      if (found_routine == "") {
+        next_state = BLANK;
+      } else {
+        next_state = RUN_PROGRAMMED_ROUTINE;
+        current_runtime_ = 30;
+
+        programmed_routine_.LoadRoutineFromProto(
+            client_.routines()[found_routine]);
+      }
+
+      ::std::cout << "Playing " << found_routine << ::std::endl;
+
+      break;
+    }
+
     int all_routines_count =
         client_.routines_order().size() + dynamic_routines_.size();
 
     current_routine_ = rand() % all_routines_count;
 
     // Don't repeat routines back-to-back.
-    if(current_routine_ == last_routine_) {
+    if (current_routine_ == last_routine_) {
       current_routine_ = (current_routine_ + 1) % all_routines_count;
     }
 
@@ -194,6 +251,7 @@ void Display::RunIteration() {
 
     if (all_routines_count == 0) {
       next_state = BLANK;
+      animation_complete = false;
     } else if (current_routine_ <
                static_cast<int>(client_.routines_order().size())) {
 
@@ -202,16 +260,23 @@ void Display::RunIteration() {
       programmed_routine_.LoadRoutineFromProto(
           client_.routines()[routine_to_run]);
 
-      if(routine_to_run == "rotate") {
+      if (routine_to_run == "rotate") {
         current_runtime_ = 7;
       } else {
         current_runtime_ = 30;
+      }
+
+      // Don't run 420 routine on any other day.
+      if (routine_to_run == "rasta") {
+        continue;
       }
 
       ::std::cout << "Playing routine \"" << routine_to_run
                   << "\" with runtime " << current_runtime_ << ::std::endl;
 
       next_state = RUN_PROGRAMMED_ROUTINE;
+
+      break;
     } else {
       current_routine_ -= client_.routines_order().size();
       dynamic_routines_[current_routine_]->Reset();
@@ -220,6 +285,8 @@ void Display::RunIteration() {
       ::std::cout << "Playing dynamic routine \""
                   << dynamic_routines_[current_routine_]->name()
                   << "\" with runtime " << current_runtime_ << ::std::endl;
+
+      break;
     }
   }
 

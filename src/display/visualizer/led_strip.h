@@ -79,9 +79,9 @@ class LedStrip : public Visualizer {
       return;
     }
 
-    ws2811_led_t led_color = ((char)(b * brightness_) << 16) |
-                             ((char)(g * brightness_) << 8) |
-                             (char)(r * brightness_);
+    ws2811_led_t led_color = ((unsigned char)(b * brightness_) << 16) |
+                             ((unsigned char)(g * brightness_) << 8) |
+                             ((unsigned char)(r * brightness_) << 0);
 
     leds_.channel[0].leds[led] = led_color;
   }

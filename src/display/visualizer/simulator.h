@@ -98,9 +98,9 @@ class Simulator : public Visualizer {
       return;
     }
 
-    uint32_t led_color = ((char)(b * brightness_) << 16) |
-                         ((char)(g * brightness_) << 8) |
-                         (char)(r * brightness_);
+    uint32_t led_color = ((unsigned char)(b * brightness_) << 16) |
+                         ((unsigned char)(g * brightness_) << 8) |
+                         ((unsigned char)(r * brightness_) << 0);
     leds_[led] = led_color;
   }
 

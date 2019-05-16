@@ -37,8 +37,11 @@ class ProgrammedRoutine : public Routine {
 
   void LoadRoutineFromProto(::src::Routine &routine) {
     routine_ = &routine;
-    frame_ = rand() % routine_->frames_size();
     Reset();
+  }
+
+  void RandomizeFrame() {
+    frame_ = rand() % routine_->frames_size();
   }
 
   ::std::string name() { return routine_->name(); }

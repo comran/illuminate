@@ -18,14 +18,13 @@ Display::Display(int led_override) :
     client_(kServerUrl),
     programmed_routine_(kNumberOfLeds),
     led_override_(led_override),
-    current_runtime_(0),
-    printed_dimmed_(false) {
+    current_runtime_(0) {
 
   dynamic_routines_.push_back(
       new routines::LineHighlightRoutine(kNumberOfLeds));
   dynamic_routines_.push_back(new routines::OutlineRoutine(kNumberOfLeds));
   dynamic_routines_.push_back(new routines::MovieTheaterRoutine(kNumberOfLeds));
-  // dynamic_routines_.push_back(new routines::FadeRoutine(kNumberOfLeds));
+  dynamic_routines_.push_back(new routines::TdxRoutine(kNumberOfLeds));
 }
 
 void Display::Run() {
@@ -43,9 +42,8 @@ void Display::RunIteration() {
   int hour = aTime->tm_hour;
   int day_of_month = aTime->tm_mday;
   int month = aTime->tm_mon;
+  int day_of_week = aTime->tm_wday;
   CheckFps();
-
-  State next_state = state_;
 
   if (!visualizer_->Render()) {
     Quit();
@@ -53,23 +51,8 @@ void Display::RunIteration() {
 
   bool animation_complete = false;
 
-  // Adjust brightness depending on time of night to avoid annoying the guys
-  // with windows facing the sign.
-
-  visualizer_->set_brightness(1.0);
-  if (hour >= 23 || hour <= 9) {
-    // Dim mode.
-    visualizer_->set_brightness(0.40);
-
-    if (!printed_dimmed_) {
-      ::std::cout << "Late at night; entering dimmed mode." << ::std::endl;
-      printed_dimmed_ = true;
-    }
-  } else {
-    // Full brightness mode.
-    visualizer_->set_brightness(1.0);
-    printed_dimmed_ = false;
-  }
+  // Dim the sign at later hours of the night.
+  visualizer_->set_brightness(GetBrightness(aTime));
 
   switch (state_) {
     case STARTUP:
@@ -77,8 +60,7 @@ void Display::RunIteration() {
         visualizer_->SetLed(i, 0, 0, 0);
       }
 
-      next_state = CONNECTING_TO_SERVER;
-
+      SetState(CONNECTING_TO_SERVER);
       break;
 
     case LED_OVERRIDE:
@@ -113,14 +95,14 @@ void Display::RunIteration() {
       }
 
       if (client_.connected()) {
-        next_state = DOWNLOADING_ROUTINES;
+        SetState(DOWNLOADING_ROUTINES);
       }
 
       break;
 
     case DOWNLOADING_ROUTINES:
       client_.FetchData();
-      next_state = WAIT_FOR_DOWNLOAD_TO_COMPLETE;
+      SetState(WAIT_FOR_DOWNLOAD_TO_COMPLETE);
 
       break;
 
@@ -130,13 +112,14 @@ void Display::RunIteration() {
       }
 
       if (!client_.connected()) {
-        next_state = CONNECTING_TO_SERVER;
+        SetState(CONNECTING_TO_SERVER);
       }
 
       if (client_.FetchFinished()) {
         visualizer_->SetPixelLayout(client_.pixel_layout());
 
         ::std::cout << "hour is " << hour << ::std::endl;
+        ::std::cout << "day_of_week is " << day_of_week << ::std::endl;
         ::std::cout << "day_of_month is " << day_of_month << ::std::endl;
         ::std::cout << "month is " << month << ::std::endl;
 
@@ -147,14 +130,15 @@ void Display::RunIteration() {
 
     case BLANK:
       for (int i = 0; i < kNumberOfLeds; i++) {
-        visualizer_->SetLed(i, 0, 0, 0);
+        visualizer_->SetLed(i, kBlankBrightness, kBlankBrightness,
+                            kBlankBrightness);
       }
 
       break;
 
     case RUN_PROGRAMMED_ROUTINE:
       if (client_.routines_order().size() < 1) {
-        next_state = BLANK;
+        SetState(BLANK);
       }
 
       programmed_routine_.DrawFrame(*visualizer_);
@@ -178,62 +162,7 @@ void Display::RunIteration() {
 
   // Select the next state if the current animation completes.
   while (animation_complete) {
-    bool blank = false;
-    if (month == 3) {
-      int day;
-      int hour_start = 12 + 9;
-      int hour_end = 4;
-
-      // TODO: Deal with days that wrap to the next month.
-
-      // Euroclub party.
-      day = 19;
-      if ((day_of_month == day && hour >= hour_start) ||
-          (day_of_month == (day + 1) && hour <= hour_end)) {
-        blank = true;
-      }
-
-      // Drip or drown.
-      day = 20;
-      if ((day_of_month == day && hour >= hour_start) ||
-          (day_of_month == (day + 1) && hour <= hour_end)) {
-        blank = true;
-      }
-    }
-
-    if (blank) {
-      next_state = BLANK;
-      break;
-    }
-
-    // Override on 420.
-    int day = 20;
-    if (month == 3 && ((day_of_month == day && hour > 12) ||
-                       (day_of_month == (day + 1) && hour < 12))) {
-      ::std::string found_routine = "";
-
-      int i = 0;
-      for (::std::string routine : client_.routines_order()) {
-        if (routine == "rasta") {
-          found_routine = routine;
-          break;
-        }
-
-        i++;
-      }
-
-      if (found_routine == "") {
-        next_state = BLANK;
-      } else {
-        next_state = RUN_PROGRAMMED_ROUTINE;
-        current_runtime_ = 30;
-
-        programmed_routine_.LoadRoutineFromProto(
-            client_.routines()[found_routine]);
-      }
-
-      ::std::cout << "Playing " << found_routine << ::std::endl;
-
+    if(OverrideOnThursday(aTime) || OverrideOnWeekday(aTime)) {
       break;
     }
 
@@ -250,7 +179,7 @@ void Display::RunIteration() {
     last_routine_ = current_routine_;
 
     if (all_routines_count == 0) {
-      next_state = BLANK;
+      SetState(BLANK);
       animation_complete = false;
     } else if (current_routine_ <
                static_cast<int>(client_.routines_order().size())) {
@@ -259,28 +188,28 @@ void Display::RunIteration() {
       ::std::string routine_to_run = client_.routines_order()[current_routine_];
       programmed_routine_.LoadRoutineFromProto(
           client_.routines()[routine_to_run]);
+      
+      programmed_routine_.RandomizeFrame();
 
-      if (routine_to_run == "rotate") {
-        current_runtime_ = 7;
-      } else {
-        current_runtime_ = 30;
-      }
-
-      // Don't run 420 routine on any other day.
-      if (routine_to_run == "rasta") {
+      current_runtime_ = GetAnimatedRuntime(routine_to_run);
+      if(current_runtime_ == 0) {
         continue;
       }
 
       ::std::cout << "Playing routine \"" << routine_to_run
                   << "\" with runtime " << current_runtime_ << ::std::endl;
 
-      next_state = RUN_PROGRAMMED_ROUTINE;
-
+      SetState(RUN_PROGRAMMED_ROUTINE);
       break;
     } else {
       current_routine_ -= client_.routines_order().size();
       dynamic_routines_[current_routine_]->Reset();
-      next_state = RUN_DYNAMIC_ROUTINE;
+      current_runtime_ = GetAnimatedRuntime(dynamic_routines_[current_routine_]->name());
+      if(current_runtime_ == 0) {
+        continue;
+      }
+
+      SetState(RUN_DYNAMIC_ROUTINE);
 
       ::std::cout << "Playing dynamic routine \""
                   << dynamic_routines_[current_routine_]->name()
@@ -289,8 +218,105 @@ void Display::RunIteration() {
       break;
     }
   }
+}
 
-  state_ = next_state;
+int Display::GetAnimatedRuntime(::std::string routine_to_run) {
+  // Don't run static routines when doing animated ones.
+  if (routine_to_run == "tdx_routine" || routine_to_run == "rasta") {
+    return 0;
+  }
+
+  if (routine_to_run == "rotate" || routine_to_run == "rainbow_diagonal") {
+    return 7;
+  } else {
+    return rand() % 30 + 30;
+  }
+}
+
+bool Display::OverrideOnThursday(struct tm *aTime) {
+  int hour = aTime->tm_hour;
+  int day_of_week = aTime->tm_wday;
+
+  if ((day_of_week < 4 || (day_of_week >= 5 && hour > 12))) {
+    return false;
+  }
+  
+  ::std::string found_routine = "";
+
+  int i = 0;
+  for (::std::string routine_name : client_.routines_order()) {
+    if (routine_name == "hues") {
+      found_routine = routine_name;
+      break;
+    }
+
+    i++;
+  }
+
+  if (found_routine == "") {
+    SetState(BLANK);
+  } else {
+    SetState(RUN_PROGRAMMED_ROUTINE);
+    current_runtime_ = 60;
+
+    programmed_routine_.LoadRoutineFromProto(
+      client_.routines()[found_routine]);
+
+    current_routine_ = i + dynamic_routines_.size();
+    SetState(RUN_PROGRAMMED_ROUTINE);
+  }
+
+  return true;
+}
+
+bool Display::OverrideOnWeekday(struct tm *aTime) {
+  int hour = aTime->tm_hour;
+  int day_of_week = aTime->tm_wday;
+
+  // Just show TDX light on any day but Friday and Saturday.
+  if ((day_of_week >= 5 && hour > 12)) {
+    return false;
+  }
+  
+  ::std::string found_routine = "";
+
+  int i = 0;
+  for (::src::display::routines::Routine *routine : dynamic_routines_) {
+    if (routine->name() == "tdx_routine") {
+      found_routine = routine->name();
+      break;
+    }
+
+    i++;
+  }
+
+  if (found_routine == "") {
+    SetState(BLANK);
+  } else {
+    SetState(RUN_PROGRAMMED_ROUTINE);
+    current_runtime_ = 30;
+
+    current_routine_ = i;
+    dynamic_routines_[current_routine_]->Reset();
+    SetState(RUN_DYNAMIC_ROUTINE);
+  }
+
+  return true;
+}
+
+double Display::GetBrightness(struct tm *aTime) {
+  double hour = aTime->tm_hour + aTime->tm_min / 60.0 + aTime->tm_sec / 3600.0;
+
+  // When the day increments wraps, add to the hour counter to compensate.
+  if (hour < 10) {
+    hour += 24;
+  }
+
+  double progress =
+      (hour - kDimFadeStartHour) / (kDimFadeEndHour - kDimFadeStartHour);
+  progress = ::std::min(::std::max(progress, 0.0), 1.0);
+
+  return kMaxBrightness - (kMaxBrightness - kMinBrightness) * progress;
 }
 
 void Display::CheckFps() {
@@ -311,6 +337,10 @@ void Display::CheckFps() {
   }
 
   last_iteration_ = current_time;
+}
+
+void Display::SetState(State state) {
+  state_ = state;
 }
 
 void Display::Quit() { running_ = false; }

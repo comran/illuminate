@@ -14,6 +14,7 @@
 #include "src/display/routines/movie_theater_routine.h"
 #include "src/display/routines/outline_routine.h"
 #include "src/display/routines/programmed_routine.h"
+#include "src/display/routines/tdx_routine.h"
 
 #ifdef RASPI_DEPLOYMENT
 #include "src/display/visualizer/led_strip.h"
@@ -28,6 +29,12 @@ static constexpr int kFramesPerSecond = 30;
 static constexpr int kNumberOfLeds = 551;
 static const bool kPrintFps = false;
 static const int kNumberOfDynamicRoutines = 2;
+static const int kBlankBrightness = 0;
+static const double kMaxBrightness = 0.9;
+static const double kMinBrightness = 0.25;
+static const double kDimFadeStartHour = 12 + 9;
+static const double kDimFadeEndHour = 12 + 11.5;
+
 #ifdef RASPI_DEPLOYMENT
 static const char *const kServerUrl = "http://127.0.0.1:5000";
 #else
@@ -57,6 +64,11 @@ class Display {
 
  private:
   void CheckFps();
+  double GetBrightness(struct tm *aTime);
+  int GetAnimatedRuntime(::std::string routine_to_run);
+  bool OverrideOnThursday(struct tm *aTime);
+  bool OverrideOnWeekday(struct tm *aTime);
+  void SetState(State state);
 
   Visualizer *visualizer_;
 
@@ -73,7 +85,6 @@ class Display {
   routines::ProgrammedRoutine programmed_routine_;
   int led_override_;
   double current_runtime_;
-  bool printed_dimmed_;
 };
 
 } // namespace display

@@ -10,7 +10,7 @@
 #include "src/messages.pb.h"
 
 namespace {
-static int kMaxWindowSize = 1920;
+static const int kMaxWindowSize = 1920;
 } // namespace
 
 class Simulator : public Visualizer {

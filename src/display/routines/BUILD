@@ -10,6 +10,7 @@ cc_library(
     'outline_routine.h',
     'movie_theater_routine.h',
     'fade_routine.h',
+    'tdx_routine.h',
   ],
   deps = [
     "//src/display/visualizer:visualizer",

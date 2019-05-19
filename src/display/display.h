@@ -67,6 +67,7 @@ class Display {
   double GetBrightness(struct tm *aTime);
   int GetAnimatedRuntime(::std::string routine_to_run);
   bool OverrideOnThursday(struct tm *aTime);
+  bool OverrideOnSaturday(struct tm *aTime);
   bool OverrideOnWeekday(struct tm *aTime);
   void SetState(State state);
 

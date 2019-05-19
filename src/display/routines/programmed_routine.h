@@ -40,9 +40,7 @@ class ProgrammedRoutine : public Routine {
     Reset();
   }
 
-  void RandomizeFrame() {
-    frame_ = rand() % routine_->frames_size();
-  }
+  void RandomizeFrame() { frame_ = rand() % routine_->frames_size(); }
 
   ::std::string name() { return routine_->name(); }
 

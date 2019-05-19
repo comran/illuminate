@@ -162,7 +162,8 @@ void Display::RunIteration() {
 
   // Select the next state if the current animation completes.
   while (animation_complete) {
-    if(OverrideOnThursday(aTime) || OverrideOnWeekday(aTime)) {
+    if (OverrideOnThursday(aTime) || OverrideOnSaturday(aTime) ||
+        OverrideOnWeekday(aTime)) {
       break;
     }
 
@@ -188,11 +189,11 @@ void Display::RunIteration() {
       ::std::string routine_to_run = client_.routines_order()[current_routine_];
       programmed_routine_.LoadRoutineFromProto(
           client_.routines()[routine_to_run]);
-      
+
       programmed_routine_.RandomizeFrame();
 
       current_runtime_ = GetAnimatedRuntime(routine_to_run);
-      if(current_runtime_ == 0) {
+      if (current_runtime_ == 0) {
         continue;
       }
 
@@ -204,8 +205,9 @@ void Display::RunIteration() {
     } else {
       current_routine_ -= client_.routines_order().size();
       dynamic_routines_[current_routine_]->Reset();
-      current_runtime_ = GetAnimatedRuntime(dynamic_routines_[current_routine_]->name());
-      if(current_runtime_ == 0) {
+      current_runtime_ =
+          GetAnimatedRuntime(dynamic_routines_[current_routine_]->name());
+      if (current_runtime_ == 0) {
         continue;
       }
 
@@ -237,10 +239,11 @@ bool Display::OverrideOnThursday(struct tm *aTime) {
   int hour = aTime->tm_hour;
   int day_of_week = aTime->tm_wday;
 
-  if ((day_of_week < 4 || (day_of_week >= 5 && hour > 12))) {
+  if (((day_of_week < 4) || (day_of_week == 5 && hour > 12)) ||
+      (day_of_week > 5)) {
     return false;
   }
-  
+
   ::std::string found_routine = "";
 
   int i = 0;
@@ -259,8 +262,43 @@ bool Display::OverrideOnThursday(struct tm *aTime) {
     SetState(RUN_PROGRAMMED_ROUTINE);
     current_runtime_ = 60;
 
-    programmed_routine_.LoadRoutineFromProto(
-      client_.routines()[found_routine]);
+    programmed_routine_.LoadRoutineFromProto(client_.routines()[found_routine]);
+
+    current_routine_ = i + dynamic_routines_.size();
+    SetState(RUN_PROGRAMMED_ROUTINE);
+  }
+
+  return true;
+}
+
+bool Display::OverrideOnSaturday(struct tm *aTime) {
+  int hour = aTime->tm_hour;
+  int day_of_week = aTime->tm_wday;
+
+  if ((day_of_week == 0 && hour > 12) ||
+      (day_of_week != 0 && day_of_week < 6)) {
+    return false;
+  }
+
+  ::std::string found_routine = "";
+
+  int i = 0;
+  for (::std::string routine_name : client_.routines_order()) {
+    if (routine_name == "projector_visuals") {
+      found_routine = routine_name;
+      break;
+    }
+
+    i++;
+  }
+
+  if (found_routine == "") {
+    SetState(BLANK);
+  } else {
+    SetState(RUN_PROGRAMMED_ROUTINE);
+    current_runtime_ = 60;
+
+    programmed_routine_.LoadRoutineFromProto(client_.routines()[found_routine]);
 
     current_routine_ = i + dynamic_routines_.size();
     SetState(RUN_PROGRAMMED_ROUTINE);
@@ -277,7 +315,7 @@ bool Display::OverrideOnWeekday(struct tm *aTime) {
   if ((day_of_week >= 5 && hour > 12)) {
     return false;
   }
-  
+
   ::std::string found_routine = "";
 
   int i = 0;
@@ -339,9 +377,7 @@ void Display::CheckFps() {
   last_iteration_ = current_time;
 }
 
-void Display::SetState(State state) {
-  state_ = state;
-}
+void Display::SetState(State state) { state_ = state; }
 
 void Display::Quit() { running_ = false; }
 

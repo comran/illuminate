@@ -162,8 +162,7 @@ void Display::RunIteration() {
 
   // Select the next state if the current animation completes.
   while (animation_complete) {
-    if (OverrideOnThursday(aTime) || OverrideOnSaturday(aTime) ||
-        OverrideOnWeekday(aTime)) {
+    if (OverrideOnWeekday(aTime) || OverrideOnThursday(aTime) || OverrideOnSaturday(aTime)) {
       break;
     }
 
@@ -239,8 +238,7 @@ bool Display::OverrideOnThursday(struct tm *aTime) {
   int hour = aTime->tm_hour;
   int day_of_week = aTime->tm_wday;
 
-  if (((day_of_week < 4) || (day_of_week == 5 && hour > 12)) ||
-      (day_of_week > 5)) {
+  if (!((day_of_week == 4 && hour > 12) || (day_of_week == 5 && hour <= 12))) {
     return false;
   }
 
@@ -275,8 +273,7 @@ bool Display::OverrideOnSaturday(struct tm *aTime) {
   int hour = aTime->tm_hour;
   int day_of_week = aTime->tm_wday;
 
-  if ((day_of_week == 0 && hour > 12) ||
-      (day_of_week != 0 && day_of_week < 6)) {
+  if (!((day_of_week == 6 && hour > 12) || (day_of_week == 0 && hour <= 12))) {
     return false;
   }
 
@@ -312,7 +309,9 @@ bool Display::OverrideOnWeekday(struct tm *aTime) {
   int day_of_week = aTime->tm_wday;
 
   // Just show TDX light on any day but Friday and Saturday.
-  if ((day_of_week >= 5 && hour > 12)) {
+  if (!(day_of_week < 4
+      || (day_of_week == 4 && hour <= 12)
+      || (day_of_week == 0 && hour > 12)) && !(hour >= 2 && hour < 12)) {
     return false;
   }
 

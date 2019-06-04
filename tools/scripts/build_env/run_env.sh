@@ -146,6 +146,7 @@ docker run \
   -v $ROOT_PATH:/home/illuminate/code_env \
   -e DISPLAY=$DISPLAY \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v ~/.ssh:/home/illuminate/.ssh          \
   --dns 8.8.8.8 \
   --name illuminate_build_env \
   illuminate_build_env \

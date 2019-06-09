@@ -309,7 +309,7 @@ bool Display::OverrideOnWeekday(struct tm *aTime) {
   int day_of_week = aTime->tm_wday;
 
   // Just show TDX light on any day but Friday and Saturday.
-  if (!(day_of_week < 4
+  if (!((day_of_week < 4 && day_of_week > 0)
       || (day_of_week == 4 && hour <= 12)
       || (day_of_week == 0 && hour > 12)) && !(hour >= 2 && hour < 12)) {
     return false;

@@ -162,7 +162,7 @@ void Display::RunIteration() {
 
   // Select the next state if the current animation completes.
   while (animation_complete) {
-    if (OverrideOnWeekday(aTime) || OverrideOnThursday(aTime) || OverrideOnSaturday(aTime)) {
+    if (OverrideOnFourthOfJuly(aTime) || OverrideOnPride(aTime) || OverrideOnWeekday(aTime) || OverrideOnThursday(aTime) || OverrideOnSaturday(aTime)) {
       break;
     }
 
@@ -247,6 +247,78 @@ bool Display::OverrideOnThursday(struct tm *aTime) {
   int i = 0;
   for (::std::string routine_name : client_.routines_order()) {
     if (routine_name == "hues") {
+      found_routine = routine_name;
+      break;
+    }
+
+    i++;
+  }
+
+  if (found_routine == "") {
+    SetState(BLANK);
+  } else {
+    SetState(RUN_PROGRAMMED_ROUTINE);
+    current_runtime_ = 60;
+
+    programmed_routine_.LoadRoutineFromProto(client_.routines()[found_routine]);
+
+    current_routine_ = i + dynamic_routines_.size();
+    SetState(RUN_PROGRAMMED_ROUTINE);
+  }
+
+  return true;
+}
+
+bool Display::OverrideOnFourthOfJuly(struct tm *aTime) {
+  int hour = aTime->tm_hour;
+  int month = aTime->tm_mon;
+  int month_day = aTime->tm_mday;
+
+  if (!((month == 6 && month_day == 2 && hour > 12) || (month == 6 && month_day == 3 && hour <= 12))) {
+    return false;
+  }
+
+  ::std::string found_routine = "";
+
+  int i = 0;
+  for (::std::string routine_name : client_.routines_order()) {
+    if (routine_name == "american_flag") {
+      found_routine = routine_name;
+      break;
+    }
+
+    i++;
+  }
+
+  if (found_routine == "") {
+    SetState(BLANK);
+  } else {
+    SetState(RUN_PROGRAMMED_ROUTINE);
+    current_runtime_ = 60;
+
+    programmed_routine_.LoadRoutineFromProto(client_.routines()[found_routine]);
+
+    current_routine_ = i + dynamic_routines_.size();
+    SetState(RUN_PROGRAMMED_ROUTINE);
+  }
+
+  return true;
+}
+
+bool Display::OverrideOnPride(struct tm *aTime) {
+  int hour = aTime->tm_hour;
+  int month = aTime->tm_mon;
+  int month_day = aTime->tm_mday;
+
+  if (!((month == 5 && month_day == 28 && hour > 12) || (month == 5 && month_day == 29 && hour <= 12))) {
+    return false;
+  }
+
+  ::std::string found_routine = "";
+
+  int i = 0;
+  for (::std::string routine_name : client_.routines_order()) {
+    if (routine_name == "rainbow_diagonal") {
       found_routine = routine_name;
       break;
     }

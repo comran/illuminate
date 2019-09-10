@@ -31,7 +31,7 @@ static const bool kPrintFps = false;
 static const int kNumberOfDynamicRoutines = 2;
 static const int kBlankBrightness = 0;
 static const double kMaxBrightness = 0.9;
-static const double kMinBrightness = 0.25;
+static const double kMinBrightness = 0.10;
 static const double kDimFadeStartHour = 12 + 9;
 static const double kDimFadeEndHour = 12 + 11.5;
 
@@ -69,6 +69,8 @@ class Display {
   bool OverrideOnThursday(struct tm *aTime);
   bool OverrideOnSaturday(struct tm *aTime);
   bool OverrideOnWeekday(struct tm *aTime);
+  bool OverrideOnPride(struct tm *aTime);
+  bool OverrideOnFourthOfJuly(struct tm *aTime);
   void SetState(State state);
 
   Visualizer *visualizer_;

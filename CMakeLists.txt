@@ -2,6 +2,7 @@
 # CMake Config #################################################################
 ################################################################################
 cmake_minimum_required(VERSION 3.5)
+set(CMAKE_CXX_STANDARD 11)
 project(illuminate)
 
 if(POLICY CMP0074)
@@ -23,18 +24,18 @@ option(BUILD_DEPENDENCIES "Build dependencies if not found in system" ON)
 ################################################################################
 include(third_party/CMakeLists.txt)
 
-add_protobuf_cpp_target(messages_proto src/messages.proto
+add_protobuf_cpp_target(illuminate_proto src/messages.proto
     BUILD_PREFIX "src/"
     PROTOC_FLAGS --proto_path "${CMAKE_SOURCE_DIR}")
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(include)
 
-set(${PROJECT_NAME}_SRCS
-  src/base64_tools.cc
-  src/phased_loop.cc
-  src/scheduler.cc
-)
+file(GLOB ${PROJECT_NAME}_SRCS
+	"src/*.cc")
+file(GLOB ${PROJECT_NAME}_HDRS
+	"src/*.h")
 
-add_library(${PROJECT_NAME}
-  ${${PROJECT_NAME}_SRCS})
+add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
+target_link_libraries(${PROJECT_NAME} PUBLIC illuminate_proto)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/src)
+target_include_directories(${PROJECT_NAME} PUBLIC src)
+

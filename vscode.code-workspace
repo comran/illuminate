@@ -1,14 +1,14 @@
 {
   "folders": [
     {
-      "path": ".."
+      "path": "."
     }
   ],
   "settings": {
     // All available settings for VS Code are available here:
     // https://gist.github.com/xgqfrms-GitHub/baa25e374f4282f52b3ab5fcb7b930ca
 
-    "editor.rulers": [80]
+    "editor.rulers": [80],
     "editor.insertSpaces": true,
     "editor.tabSize": 2,
     "editor.roundedSelection": true,

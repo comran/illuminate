@@ -10,7 +10,7 @@ macro(find_or_build _package_name)
     if(${_package_name}_FOUND)
         message(WARNING "Package ${_package_name} already found")
     endif()
-    # message(TRACE "find_package(${_package_name} ${_find_package_args})")
+
     if (NOT USE_SYSTEM_DEPENDENCIES OR TRUE)
         find_package(${_package_name} QUIET PATHS ${${_fob_FIND_VARIABLE}} NO_DEFAULT_PATH ${_find_package_args})
         if(${_package_name}_FOUND)

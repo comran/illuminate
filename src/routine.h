@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 #include "visualizer.h"
 
 namespace illuminate {

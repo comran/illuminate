@@ -1,8 +1,24 @@
-sudo:
-  - required
+dist: bionic
+sudo: required
+services: docker
+language: bash
 
-os:
-  - linux
+addons:
+  apt:
+    packages:
+      - build-essential
+      - libzmq3-dev
+      - libzmqpp-dev
+      - libgtest-dev
+      - libprotobuf-dev
+      - protobuf-compiler
+      - curl
+      - gnupg2
+      - lsb-release
+      - libboost1.65-dev
 
 script:
- - ./illuminate display build
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make

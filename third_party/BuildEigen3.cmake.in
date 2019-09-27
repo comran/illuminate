@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.2)
+
+project(BuildEigen3 NONE)
+
+set(Eigen3_VERSION "3.3.7")
+set(Eigen3_SHA1 "743c1dc00c6680229d8cc87d44debe5a71d15c01")
+
+include(ExternalProject)
+ExternalProject_Add(Eigen3
+    PREFIX            "${CMAKE_CURRENT_BINARY_DIR}"
+    URL               "https://bitbucket.org/eigen/eigen/get/${Eigen3_VERSION}.tar.gz"
+    URL_HASH          SHA1=${Eigen3_SHA1}
+    STAMP_DIR         "${CMAKE_CURRENT_BINARY_DIR}/stamp"
+    DOWNLOAD_DIR      "${CMAKE_CURRENT_BINARY_DIR}"
+    SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/src"
+    BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/build"
+    INSTALL_DIR       "${CMAKE_CURRENT_BINARY_DIR}/install"
+    CMAKE_GENERATOR   "@CMAKE_GENERATOR@"
+    CMAKE_ARGS        -DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@
+                      -DCMAKE_TOOLCHAIN_FILE=@CMAKE_TOOLCHAIN_FILE@
+                      -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install
+                      -DBUILD_TESTING=OFF
+                      -DEIGEN_TEST_NOQT=ON
+    TEST_COMMAND      ""
+)

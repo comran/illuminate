@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.2)
+
+project(BuildZeroMQ NONE)
+
+set(ZeroMQ_VERSION "4.3.2")
+set(ZeroMQ_SHA1 "e5253bff214f77621b3d29443f1aa6e5a106ffe5")
+
+include(ExternalProject)
+ExternalProject_Add(ZeroMQ
+    PREFIX            "${CMAKE_CURRENT_BINARY_DIR}"
+    URL "https://github.com/zeromq/libzmq/releases/download/v${ZeroMQ_VERSION}/zeromq-${ZeroMQ_VERSION}.tar.gz"
+    URL_HASH SHA1=${ZeroMQ_SHA1}
+    STAMP_DIR         "${CMAKE_CURRENT_BINARY_DIR}/stamp"
+    DOWNLOAD_DIR      "${CMAKE_CURRENT_BINARY_DIR}"
+    SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/src"
+    BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/build"
+    INSTALL_DIR       "${CMAKE_CURRENT_BINARY_DIR}/install"
+    CMAKE_GENERATOR   "@CMAKE_GENERATOR@"
+    CMAKE_ARGS        -DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@
+                      -DCMAKE_TOOLCHAIN_FILE=@CMAKE_TOOLCHAIN_FILE@
+                      -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install
+    TEST_COMMAND      ""
+)

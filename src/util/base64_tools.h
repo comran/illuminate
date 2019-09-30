@@ -1,10 +1,11 @@
 #pragma once
 
-#include <chrono>
 #include <string>
 #include <thread>
 
 namespace illuminate {
+namespace util {
+
 namespace {
 const ::std::string kBase64Chars = //
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"   //
@@ -17,4 +18,5 @@ const ::std::string kBase64Chars = //
 ::std::string Encode(::std::string str);
 bool IsBase64(unsigned char c);
 
-}
+} // namespace util
+} // namespace illuminate

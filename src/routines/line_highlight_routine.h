@@ -5,8 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace src {
-namespace display {
+namespace illuminate {
 namespace routines {
 
 class LineHighlightRoutine : public Routine {
@@ -36,5 +35,4 @@ class LineHighlightRoutine : public Routine {
 };
 
 } // namespace routines
-} // namespace display
-} // namespace src
+} // namespace illuminate

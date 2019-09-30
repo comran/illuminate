@@ -4,8 +4,8 @@
 
 #include <cmath>
 
-#include "src/display/visualizer/visualizer.h"
-#include "src/messages.pb.h"
+#include "visualizer/visualizer.h"
+#include "proto/messages.pb.h"
 
 namespace {
 static const int kLedStripGpioPin = 10;

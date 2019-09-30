@@ -1,6 +1,7 @@
 #include "base64_tools.h"
 
 namespace illuminate {
+namespace util {
 
 // Taken from here:
 // https://renenyffenegger.ch/notes/development/Base64/Encoding-and-decoding-base-64-with-cpp
@@ -103,4 +104,5 @@ bool IsBase64(unsigned char c) {
                 str.size());
 }
 
-}
+} // namespace util
+} // namespace illuminate

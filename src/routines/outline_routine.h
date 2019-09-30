@@ -5,8 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace src {
-namespace display {
+namespace illuminate {
 namespace routines {
 
 class OutlineRoutine : public Routine {
@@ -47,5 +46,4 @@ class OutlineRoutine : public Routine {
 };
 
 } // namespace routines
-} // namespace display
-} // namespace src
+} // namespace illuminate

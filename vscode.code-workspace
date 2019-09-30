@@ -24,5 +24,30 @@
     "git.enabled": true,
     "git.countBadge": "all",
     "git.checkoutType": "all",
+
+    "files.exclude": {
+      "**/.vscode": true,
+      "**/build": true,
+      "**/install": true,
+      "**/log": true,
+      "**/Testing": true,
+      "**/node_modules/*/**": true,
+      "**/.*.swp": true,
+      "**/CMakeFiles": true,
+    },
+
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/*/**": true,
+      "**/src/ground/*/**": true,
+      "**/src/vision/*/**": true,
+      "**/tools/*/**": true,
+      "**/external/*/**": true,
+      "**/CMakeFiles": true,
+    },
+
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
   }
 }

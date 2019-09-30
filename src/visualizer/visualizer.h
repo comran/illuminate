@@ -1,6 +1,6 @@
 #pragma once
 
-#include "messages.pb.h"
+#include "proto/messages.pb.h"
 
 class Visualizer {
  public:

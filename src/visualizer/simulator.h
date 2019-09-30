@@ -6,8 +6,9 @@
 
 #include "SDL.h"
 
-#include "src/display/visualizer/visualizer.h"
-#include "src/messages.pb.h"
+#include "proto/messages.pb.h"
+
+#include "visualizer.h"
 
 namespace {
 static const int kMaxWindowSize = 1920;

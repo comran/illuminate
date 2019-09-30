@@ -5,8 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace src {
-namespace display {
+namespace illuminate {
 namespace routines {
 namespace {
 static const int kFadeFrames = 3000;
@@ -39,5 +38,4 @@ class FadeRoutine : public Routine {
 };
 
 } // namespace routines
-} // namespace display
-} // namespace src
+} // namespace illuminate

@@ -5,8 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace src {
-namespace display {
+namespace illuminate {
 namespace routines {
 namespace {
 static const int kSpread = 10;
@@ -42,5 +41,4 @@ class MovieTheaterRoutine : public Routine {
 };
 
 } // namespace routines
-} // namespace display
-} // namespace src
+} // namespace illuminate

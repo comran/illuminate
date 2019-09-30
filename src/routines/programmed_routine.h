@@ -4,10 +4,9 @@
 
 #include <iostream>
 
-#include "src/messages.pb.h"
+#include "proto/messages.pb.h"
 
-namespace src {
-namespace display {
+namespace illuminate {
 namespace routines {
 
 class ProgrammedRoutine : public Routine {
@@ -50,5 +49,4 @@ class ProgrammedRoutine : public Routine {
 };
 
 } // namespace routines
-} // namespace display
-} // namespace src
+} // namespace illuminate

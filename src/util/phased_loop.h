@@ -4,6 +4,7 @@
 #include <thread>
 
 namespace illuminate {
+namespace util {
 
 class PhasedLoop {
  public:
@@ -17,4 +18,5 @@ class PhasedLoop {
   double next_iteration_;
 };
 
-}
+} // namespace util
+} // namespace illuminate

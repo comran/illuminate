@@ -16,6 +16,7 @@ addons:
       - gnupg2
       - lsb-release
       - libboost1.65-dev
+      - libsdl2-dev
 
 script:
   - mkdir build

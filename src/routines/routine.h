@@ -2,9 +2,18 @@
 
 #include <chrono>
 
-#include "visualizer.h"
+#include "../visualizer/visualizer.h"
 
 namespace illuminate {
+namespace routines {
+namespace {
+static const int kLightBlue = 0x4444FF;
+static const int kBlue = 0x0000FF;
+static const int kDimBlue = 0x000066;
+static const int kBlack = 0x000000;
+static const int kDimWhite = 0x333333;
+static const int kWhite = 0xFFFFFF;
+} // namespace
 
 class Routine {
  public:
@@ -50,4 +59,5 @@ class Routine {
   double start_time_;
 };
 
-}
+} // namespace routines
+} // namespace illuminate

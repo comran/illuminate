@@ -3,6 +3,7 @@
 #include <iostream>
 
 namespace illuminate {
+namespace util {
 
 PhasedLoop::PhasedLoop(double frequency) :
     frequency_(frequency),
@@ -28,4 +29,5 @@ double PhasedLoop::GetCurrentTime() {
          1e-9;
 }
 
-}
+} // namespace util
+} // namespace illuminate

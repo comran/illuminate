@@ -5,8 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace src {
-namespace display {
+namespace illuminate {
 namespace routines {
 namespace {
 static const int kBlueLeds = 210;
@@ -33,5 +32,4 @@ class TdxRoutine : public Routine {
 };
 
 } // namespace routines
-} // namespace display
-} // namespace src
+} // namespace illuminate

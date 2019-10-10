@@ -11,3 +11,6 @@ package-lock.json
 /tools/cache/
 /build
 /CMakeFiles
+__pycache__
+*.pyc
+/src/python/messages_pb2.py

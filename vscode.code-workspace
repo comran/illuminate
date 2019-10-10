@@ -34,6 +34,8 @@
       "**/node_modules/*/**": true,
       "**/.*.swp": true,
       "**/CMakeFiles": true,
+      "**/*.pyc": true,
+      "**/__pycache__": true,
     },
 
     "files.watcherExclude": {

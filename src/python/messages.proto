@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package src;
+
+message Frame {
+  repeated int32 pixel_colors                                               = 1;
+}
+
+message Routine {
+  required int32 fps                                                        = 1;
+  required string name                                                      = 2;
+  repeated Frame frames                                                     = 3;
+}
+
+message PixelLocation {
+  required double x                                                         = 1;
+  required double y                                                         = 2;
+}
+
+message PixelLayout {
+  required double width                                                     = 1;
+  required double height                                                    = 2;
+  repeated PixelLocation pixel_locations                                    = 3;
+}

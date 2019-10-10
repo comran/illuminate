@@ -10,8 +10,8 @@ if(POLICY CMP0074)
 endif()
 cmake_policy(SET CMP0058 NEW)
 
-set(CMAKE_C_COMPILER "/usr/bin/gcc")
-set(CMAKE_CXX_COMPILER "/usr/bin/g++")
+set(CMAKE_C_COMPILER "/usr/bin/clang")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
 ################################################################################
 # Options and cache variables ##################################################
@@ -33,9 +33,9 @@ add_protobuf_cpp_target(illuminate_proto src/proto/messages.proto
 
 
 file(GLOB_RECURSE ${PROJECT_NAME}_SRCS
-	"src/*.cc")
+  "src/*.cc")
 file(GLOB_RECURSE ${PROJECT_NAME}_HDRS
-    "src/*.h")
+  "src/*.h")
 
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
 target_link_libraries(${PROJECT_NAME} PUBLIC illuminate_proto ${SDL2_LIBRARIES})

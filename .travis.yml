@@ -7,6 +7,7 @@ addons:
   apt:
     packages:
       - build-essential
+      - clang
       - cppcheck
       - libzmq3-dev
       - libzmqpp-dev

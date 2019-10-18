@@ -14,3 +14,6 @@ class LedPanel:
             channel)
 
         self.strip.begin()
+    
+    def render(self):
+        self.strip.show()

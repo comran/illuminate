@@ -1,4 +1,5 @@
 import time
+import os
 import rpi_ws281x
 
 class PhasedLoop:
@@ -33,4 +34,10 @@ def numpy_to_ws281x_pixel(numpy_pixel):
         int(numpy_pixel[0]),
         int(numpy_pixel[1]),
         int(numpy_pixel[2]))
+
+def is_raspi():
+    return os.uname()[4][:3] == "arm"
+
+def unit_color_to_byte_color(unit_color):
+    return (int(unit_color[0] * 255), int(unit_color[1] * 255), int(unit_color[2] * 255))
 

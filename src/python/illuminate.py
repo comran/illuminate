@@ -4,7 +4,8 @@ import dynamic_routines
 import util
 import constants
 
-
+import random
+import time
 
 def main():
     print("### Illuminate ###")
@@ -12,7 +13,12 @@ def main():
     routine_library = library.Library()
     #routine_library.load_from_folder(ROUTINES_FOLDER)
 
-    line_highlight_routine = dynamic_routines.LineHighlightRoutine(constants.LED_COUNT)
+    current_routine = None
+    routines = list()
+
+    routines.append(dynamic_routines.LineHighlightRoutine(constants.LED_COUNT))
+    routines.append(dynamic_routines.RainbowHueRoutine(constants.LED_COUNT))
+    routines.append(dynamic_routines.LineHighlightRainbowRoutine(constants.LED_COUNT))
 
     panel = led_panel.LedPanel(constants.LED_COUNT,
         constants.LED_PIN,
@@ -24,18 +30,23 @@ def main():
 
     phased_loop = util.PhasedLoop(constants.FRAMES_PER_SECOND, verbose=False)
 
+    next_routine_time = None
+
     while True:
         phased_loop.pause()
 
-        frame = line_highlight_routine.get_frame()
+        panel.clear()
+
+        if next_routine_time is None or time.time() > next_routine_time:
+            current_routine = random.choice(routines)
+            print(current_routine)
+            next_routine_time = time.time() + constants.CYCLE_TIME
+        
+        frame = current_routine.get_frame()
         count = 0
 
-        # print(frame)
-
-        for pixel in frame:
-            color = util.numpy_to_ws281x_pixel(pixel)
-
-            panel.strip.setPixelColor(count, color)
+        for color in frame:
+            panel.set_led(count, color)
             count += 1
 
         panel.render()

@@ -16,3 +16,4 @@ __pycache__
 *.pyc
 *.pyo
 /src/python/messages_pb2.py
+*.log*

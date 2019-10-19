@@ -3,6 +3,7 @@ import numpy as np
 import random
 import time
 
+import util
 import library
 import constants
 
@@ -36,6 +37,10 @@ class Player:
                 # Aliasing case. Don't transition to the exact same routine.
                 return
             else:
+                util.get_logger().debug("Transitioning from " + \
+                    str(type(self.previous_routine)) + " to " + \
+                        str(type(self.current_routine)))
+
                 self.current_transition.reset()
 
         self.current_transition = self.transitions_queue.get()

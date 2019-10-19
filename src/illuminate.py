@@ -9,9 +9,23 @@ import frame_filter
 
 import random
 import time
+import logging
+import logging.handlers
 
 def main():
-    print("### Illuminate ###")
+    illuminate_logger = util.get_logger()
+    illuminate_logger.setLevel(logging.DEBUG)
+
+    # Add the log message handler to the logger
+    logger_handler = logging.handlers.RotatingFileHandler(
+                "illuminate.log", maxBytes=1024 * 1024 * 10, backupCount=5)
+
+    illuminate_logger.addHandler(logger_handler)
+
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    logger_handler.setFormatter(formatter)
+
+    illuminate_logger.info("### Illuminate ###")
 
     sign_player = player.Player()
     sign_filter = frame_filter.Filter()

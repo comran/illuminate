@@ -2,6 +2,7 @@ import constants
 import dynamic_routines
 import messages_pb2
 import transitions
+import util
 
 import os
 import base64
@@ -70,8 +71,8 @@ class Library:
                     os.remove(routine_filename)
                     continue
 
-                print("Opened file \"" + routine.name + "\" with " \
-                    + str(len(routine.frames)) + " frames")
+                util.get_logger().debug("Opened file \"" + routine.name +
+                    "\" with " + str(len(routine.frames)) + " frames")
                 
 
                 protobuf_routine = dynamic_routines.ProtobufRoutine(constants.LED_COUNT)

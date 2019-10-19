@@ -1,6 +1,7 @@
 import time
 import os
 import rpi_ws281x
+import logging
 
 class PhasedLoop:
     def __init__(self, frequency, verbose=False):
@@ -41,3 +42,6 @@ def is_raspi():
 def unit_color_to_byte_color(unit_color):
     return (int(unit_color[0] * 255), int(unit_color[1] * 255), int(unit_color[2] * 255))
 
+illuminate_logger = logging.getLogger('IlluminateLogger')
+def get_logger():
+    return illuminate_logger

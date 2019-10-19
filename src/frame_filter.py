@@ -1,10 +1,11 @@
 import datetime
 
 import constants
+import util
 
 class Filter:
     def __init__(self):
-        self.printed_brightness = False
+        self.last_logged_brightness = -1
 
     def process(self, frame):
         now = datetime.datetime.now()
@@ -23,10 +24,12 @@ class Filter:
             (constants.DIM_MAX_BRIGHTNESS - constants.DIM_MIN_BRIGHTNESS) \
                 * dim_progress
 
-        if not self.printed_brightness:
-            print("Brightness is currently " + str(brightness) + " at " +
-                str(now.hour) + ":" + str("%02d" % now.minute))
-            self.printed_brightness = True
+        if abs(brightness - self.last_logged_brightness) > 0.05:
+            util.get_logger().debug("Brightness is currently " +
+                str(brightness) + " at " + str(now.hour) + ":" +
+                str("%02d" % now.minute))
+            
+            self.last_logged_brightness = brightness
 
         frame = frame * brightness
 

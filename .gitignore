@@ -11,7 +11,7 @@ package-lock.json
 /tools/cache/
 /build
 /CMakeFiles
-/routines
+/src/routines
 __pycache__
 *.pyc
 *.pyo

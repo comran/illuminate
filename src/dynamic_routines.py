@@ -11,7 +11,7 @@ class LineHighlightRoutine:
         self.frame = np.zeros(shape=(number_of_leds, 3), dtype=int)
 
     def get_new_color(self):
-        self.color = colorsys.hsv_to_rgb(random.uniform(0, 1), 1.0, 0.3)
+        self.color = colorsys.hsv_to_rgb(random.uniform(0, 1), 1.0, 1.0)
         self.color = util.unit_color_to_byte_color(self.color)
 
     def get_frame(self):
@@ -48,7 +48,7 @@ class LineHighlightRainbowRoutine:
         self.hue = self.hue + (1 / constants.FRAMES_PER_SECOND
             / RAINBOW_HUE_TIME_TO_COMPLETE)
         self.hue = self.hue % 1
-        color = colorsys.hsv_to_rgb(self.hue, 1.0, 0.3)
+        color = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
         color = util.unit_color_to_byte_color(color)
 
         if self.frame_index % (constants.LED_COUNT * 2) < constants.LED_COUNT:
@@ -76,7 +76,7 @@ class RainbowHueRoutine:
         self.hue = self.hue + (1 / constants.FRAMES_PER_SECOND
             / RAINBOW_HUE_TIME_TO_COMPLETE)
         self.hue = self.hue % 1
-        color = colorsys.hsv_to_rgb(self.hue, 1.0, 0.3)
+        color = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
         color = util.unit_color_to_byte_color(color)
 
         for i in range(constants.LED_COUNT):
@@ -85,3 +85,31 @@ class RainbowHueRoutine:
             self.frame[i][2] = color[2]
 
         return self.frame
+
+class ProtobufRoutine:
+    def __init__(self, number_of_leds):
+        self.frame = np.zeros(shape=(number_of_leds, 3), dtype=int)
+        self.routine_protobuf = None
+        self.index = 0
+
+    def set_routine_protobuf(self, routine_protobuf):
+        self.routine_protobuf = routine_protobuf
+
+    def get_frame(self):
+        if self.routine_protobuf is None or \
+            len(self.routine_protobuf.frames) == 0:
+            
+            return self.frame
+
+        frame_protobuf = self.routine_protobuf.frames[self.index]
+        for i in range(len(frame_protobuf.pixel_colors)):
+            color = frame_protobuf.pixel_colors[i]
+            self.frame[i][0] = color & 0xFF
+            self.frame[i][1] = (color >> 8) & 0xFF
+            self.frame[i][2] = (color >> 16) & 0xFF
+
+        self.index = (self.index + 1) % len(self.routine_protobuf.frames)
+
+        return self.frame
+
+

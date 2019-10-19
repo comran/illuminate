@@ -48,7 +48,7 @@ class LedPanelSimulator:
     def get_pixel_layout(self):
         csv_file = None
         try:
-            csv_file = open("../../routines/pixels.illp")
+            csv_file = open("routines/pixels.illp")
         except IOError:
             print("Cannot open pixel locations.")
             return

@@ -35,6 +35,7 @@
       "**/.*.swp": true,
       "**/CMakeFiles": true,
       "**/*.pyc": true,
+      "**/*.pyo": true,
       "**/__pycache__": true,
     },
 

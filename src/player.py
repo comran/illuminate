@@ -27,13 +27,15 @@ class Player:
     def get_next_routine(self):
         now = datetime.datetime.now()
 
-        adjusted_hour = now.hour + now.minute / 60
+        adjusted_weekday = now.weekday()
+        adjusted_hour = now.hour + now.minute / constants.MINUTES_IN_HOUR
         if adjusted_hour < constants.ANIMATED_START_HOUR:
             adjusted_hour += constants.HOURS_IN_DAY
+            adjusted_weekday = (adjusted_weekday - 1) % constants.DAYS_IN_WEEK
 
         start_animating_hour = constants.HOURS_IN_DAY + constants.ANIMATED_START_HOUR
 
-        stop_animating_hour = constants.ANIMATED_WEEKDAY_HOURS[now.weekday()]
+        stop_animating_hour = constants.ANIMATED_WEEKDAY_HOURS[adjusted_weekday]
         if stop_animating_hour < constants.ANIMATED_START_HOUR:
             stop_animating_hour += constants.HOURS_IN_DAY
 

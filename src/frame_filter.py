@@ -9,10 +9,10 @@ class Filter:
 
     def process(self, frame):
         now = datetime.datetime.now()
-        hour = now.hour
+        hour = now.hour + now.minute / 60
 
         # Make math a bit easier when dealing with midnight.
-        if hour < 10:
+        if hour < constants.ANIMATED_START_HOUR:
             hour += 24
 
         dim_progress = (hour - constants.DIM_FADE_START_HOUR) / \

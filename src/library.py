@@ -7,6 +7,7 @@ import util
 import os
 import base64
 import random
+import ntpath
 
 class Library:
     def __init__(self):
@@ -17,12 +18,11 @@ class Library:
         self.transitions["fade_transition"] = transitions.FadeTransition()
 
         # Load in dynamic routines.
-        self.routines["line_highlight"] = \
-            dynamic_routines.LineHighlightRoutine(constants.LED_COUNT)
-        self.routines["rainbow_hue_routine"] = \
-            dynamic_routines.RainbowHueRoutine(constants.LED_COUNT)
-        self.routines["line_highlight_rainbow_routine"] = \
-            dynamic_routines.LineHighlightRainbowRoutine(constants.LED_COUNT)
+        self.routines["line_highlight"] = dynamic_routines.LineHighlightRoutine()
+        self.routines["rainbow_hue_routine"] = dynamic_routines.RainbowHueRoutine()
+        self.routines["line_highlight_rainbow_routine"] = dynamic_routines.LineHighlightRainbowRoutine()
+        self.routines["spurt_routine"] = dynamic_routines.SpurtRoutine()
+        self.routines[constants.DEFAULT_ROUTINE] = dynamic_routines.TdxRoutine()
 
         # Load transitions from files.
         self.load_from_folder(constants.ROUTINES_FOLDER)
@@ -34,13 +34,18 @@ class Library:
         return self.transitions[transition_name]
 
     def get_random_routine(self):
-        return self.get_routine(random.choice(list(self.routines.keys())))
-    
+        while True:
+            random_routine = random.choice(list(self.routines.keys()))
+            if random_routine != constants.DEFAULT_ROUTINE or len(self.routines.keys()) == 1:
+                break
+
+        return random_routine
+
     def get_random_transition(self):
-        return self.get_transition(random.choice(list(self.transitions.keys())))
+        return random.choice(list(self.transitions.keys()))
 
     def load_from_folder(self, folder):
-        for root, dirs, files in os.walk(folder):  
+        for root, dirs, files in os.walk(folder):
             for filename in files:
                 routine_filename = root + "/" + filename
                 try:
@@ -49,7 +54,14 @@ class Library:
                     print("Cannot open saved routine: " + routine_filename)
                     os.remove(routine_filename)
                     continue
-                
+
+                filename, file_extension = os.path.splitext(routine_filename)
+                if file_extension != ".illr":
+                    continue
+
+                head, tail = ntpath.split(filename)
+                routine_name = tail
+
                 lines = 0
                 with open(routine_filename) as f:
                     for i, l in enumerate(f):
@@ -68,14 +80,13 @@ class Library:
                     routine.ParseFromString(decoded)
                 except:
                     print("Error parsing protobuf: " + routine_filename)
-                    os.remove(routine_filename)
                     continue
 
-                util.get_logger().debug("Opened file \"" + routine.name +
-                    "\" with " + str(len(routine.frames)) + " frames")
-                
-
-                protobuf_routine = dynamic_routines.ProtobufRoutine(constants.LED_COUNT)
+                protobuf_routine = dynamic_routines.ProtobufRoutine()
                 protobuf_routine.set_routine_protobuf(routine)
 
-                self.routines[routine.name] = protobuf_routine
+                util.get_logger().debug("Opened file \"" + routine_filename +
+                    "\" with " + str(len(routine.frames)) +
+                    " frames with name " + routine_name)
+
+                self.routines[routine_name] = protobuf_routine

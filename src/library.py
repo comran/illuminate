@@ -33,6 +33,21 @@ class Library:
     def get_transition(self, transition_name):
         return self.transitions[transition_name]
 
+    def get_time_based_routine(self, timestamp):
+        nondefault_routines = self.get_nondefault_routines_list()
+        index = (timestamp * 11) % len(nondefault_routines)
+        return nondefault_routines[index]
+
+    def get_nondefault_routines_list(self):
+        nondefault_routines = list()
+        for item in self.routines.keys():
+            if item is not constants.DEFAULT_ROUTINE:
+                nondefault_routines.append(item)
+
+        nondefault_routines.sort()
+
+        return nondefault_routines
+
     def get_random_routine(self):
         while True:
             random_routine = random.choice(list(self.routines.keys()))

@@ -1,40 +1,17 @@
-dist: bionic
-sudo: required
-services: docker
-language: bash
+language: python
+python: "3.7"
 
 addons:
   apt:
     packages:
-      - build-essential
-      - clang
-      - cppcheck
-      - libzmq3-dev
-      - libzmqpp-dev
-      - libgtest-dev
-      - libprotobuf-dev
-      - protobuf-compiler
-      - curl
-      - gnupg2
-      - lsb-release
-      - libboost1.65-dev
-      - libsdl2-dev
   sonarcloud:
     organization: "comran"
     token:
       secure: "dvwGYOku5fUGNh0DR0qfjVxOKMI8OoTUC/NEeE+6lFAEFB2PKuyn1JsoAf0W2WPsd9KiNEj40vawN2KocG5+yts3IU06VDbYPkAKSrJDVl/9Q6fh8mkjJ0uW6sADjo4qKWDAFld7Mz3JZvND7/2HbWd07H+30qBGnB3qf6ersXUtrgdTlOwlu/NUUV2/rlIf1cEfRBvZSm3lR+Uwb1f57hJZ8IXERN5jERz1PZu5jCioy0GQSR1AjaLIe81V8PjcCTzCSOMBNSo6HPTNE0OAnys/Wr1j39X/np7Mtzpg2QL3Szq5oP5BZPq+qZc1nibvEbFBrV3hf3pl4vntzNo6i1qLoJfdErPNH8c6EVDVqf6IWO7pv1DldVj+K5YQnRH0Htq27wwV09rmfAXgMtTxpyM2H9CE0ekCDbzvp/i4XyrYfya2RGbleCOmfCfxMuTOXxYHP38KHU/yhakhCOOBg2MkT5/pWAxCPsT0JELcOhBVUcP54JKd/rKattz31y/nO3uI6Lp0xGDpeuVrhmUr9yLQljdfc6IquqEoCc9LxCvnlJ2B7YCB23080+TuwxLQ4eIDWWsqwzhOsaxBHZGn6fVf9g/F5f+SYyNIcC4fJx8CDcJ5YwAi8xxtVfc8LxnDQ96urPKo2DTUV48fdZGFyHnGLcf/cc6PpJ2KznRJOD8="
 
-before_install:
-  - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-  - sudo apt-get install -y nodejs
-  - wget -P /tmp https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-  - unzip -d /tmp /tmp/build-wrapper-linux-x86.zip
-  - ln -s /tmp/build-wrapper-linux-x86/libinterceptor-x86_64.so /tmp/build-wrapper-linux-x86/libinterceptor-haswell.so
+install:
+  - pip install numpy opencv-python
 
 script:
-  - mkdir build
-  - cd build
-  - cmake ..
-  - /tmp/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ../bw-output make clean all
-  - cd ..
   - sonar-scanner -X
+

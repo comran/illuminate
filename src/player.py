@@ -15,18 +15,28 @@ class Player:
         self.routine_queue = queue.Queue()
         self.transitions_queue = queue.Queue()
 
+        self.next_transition_timestamp = self.get_next_transition_time()
         self.previous_routine = None
-        self.current_routine = self.library.get_random_routine()
+        self.current_routine = self.get_next_routine()
         self.current_transition = None
 
-        self.next_transition_timestamp = time.time()
+        self.start_transition()
 
         self.default_frame = np.zeros(shape=(constants.LED_COUNT, 3), dtype=int)
+
+
+    def get_next_transition_time(self):
+        now = datetime.datetime.now()
+
+        clock_start = int(time.time()) - now.second
+        multiplier = int(now.second / 15)
+        return clock_start + 15 * (multiplier + 1)
 
 
     def get_next_routine(self):
         now = datetime.datetime.now()
 
+        # Check whether default routine should be displayed.
         adjusted_weekday = now.weekday()
         adjusted_hour = now.hour + now.minute / constants.MINUTES_IN_HOUR
         if adjusted_hour < constants.ANIMATED_START_HOUR:
@@ -43,7 +53,7 @@ class Player:
             adjusted_hour <= start_animating_hour:
             routine_name = constants.DEFAULT_ROUTINE
         else:
-            routine_name = self.library.get_random_routine()
+            routine_name = self.library.get_time_based_routine(self.next_transition_timestamp)
 
         return self.library.get_routine(routine_name)
 
@@ -76,7 +86,8 @@ class Player:
     def get_frame(self):
         if time.time() > self.next_transition_timestamp:
             self.start_transition()
-            self.next_transition_timestamp = time.time() + constants.CYCLE_TIME
+            self.next_transition_timestamp = self.get_next_transition_time()#time.time() + constants.CYCLE_TIME
+        print(self.next_transition_timestamp)
 
         frame = self.current_transition.process(
             self.previous_routine, self.current_routine)

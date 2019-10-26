@@ -19,15 +19,17 @@ class PhasedLoop:
 
         time_to_pause = 1.0 / self.frequency - (current_time - self.last_pause)
         time_to_pause = max(0.0, time_to_pause)
-        frequency = 1.0 / (current_time - self.last_pause)
-        time.sleep(time_to_pause)
-        self.last_pause = current_time + 1.0 / self.frequency
+        diff = (current_time - self.last_pause)
+        if (diff > 0):
+            frequency = 1.0 / diff
+            time.sleep(time_to_pause)
+            self.last_pause = current_time + 1.0 / self.frequency
 
-        if self.verbose and self.counter == 0:
-            print(time_to_pause)
-            print("Loop frequency: " + str(frequency))
+            if self.verbose and self.counter == 0:
+                print(time_to_pause)
+                print("Loop frequency: " + str(frequency))
 
-        self.counter = (self.counter + 1) % (3 * self.frequency)
+            self.counter = (self.counter + 1) % (3 * self.frequency)
 
 
 def numpy_to_ws281x_pixel(numpy_pixel):

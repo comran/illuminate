@@ -42,5 +42,3 @@ class LedPanel:
             self.strip.show()
         else:
             self.led_panel_simulator.render()
-
-

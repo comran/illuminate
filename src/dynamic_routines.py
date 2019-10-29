@@ -9,10 +9,17 @@ class LineHighlightRoutine:
     def __init__(self):
         self.frame_index = 0
         self.frame = np.zeros(shape=(constants.LED_COUNT, 3), dtype=int)
+        self.color_generator = None
 
     def get_new_color(self):
-        self.color = colorsys.hsv_to_rgb(random.uniform(0, 1), 1.0, 1.0)
-        self.color = util.unit_color_to_byte_color(self.color)
+        if self.color_generator is not None:
+            self.color = self.color_generator.get_color()
+        else:
+            self.color = colorsys.hsv_to_rgb(random.uniform(0, 1), 1.0, 1.0)
+            self.color = util.unit_color_to_byte_color(self.color)
+
+    def apply_theme(self, color_generator):
+        self.color_generator = color_generator
 
     def get_frame(self):
         adjusted_index = self.frame_index % (constants.LED_COUNT * 2)
@@ -41,15 +48,22 @@ class LineHighlightRainbowRoutine:
 
         self.frame_index = 0
         self.frame = np.zeros(shape=(constants.LED_COUNT, 3), dtype=int)
+        self.color_generator = None
+
+    def apply_theme(self, color_generator):
+        self.color_generator = color_generator
 
     def get_frame(self):
         adjusted_index = self.frame_index % (constants.LED_COUNT * 2)
 
-        self.hue = self.hue + (1 / constants.FRAMES_PER_SECOND
-            / RAINBOW_HUE_TIME_TO_COMPLETE)
-        self.hue = self.hue % 1
-        color = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
-        color = util.unit_color_to_byte_color(color)
+        if self.color_generator is None:
+            self.hue = self.hue + (1 / constants.FRAMES_PER_SECOND
+                / RAINBOW_HUE_TIME_TO_COMPLETE)
+            self.hue = self.hue % 1
+            color = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
+            color = util.unit_color_to_byte_color(color)
+        else:
+            color = self.color_generator.get_color()
 
         if self.frame_index % (constants.LED_COUNT * 2) < constants.LED_COUNT:
             adjusted_index = self.frame_index % constants.LED_COUNT
@@ -71,13 +85,20 @@ class RainbowHueRoutine:
     def __init__(self):
         self.frame = np.zeros(shape=(constants.LED_COUNT, 3), dtype=int)
         self.hue = 0
+        self.color_generator = None
+
+    def apply_theme(self, color_generator):
+        self.color_generator = color_generator
 
     def get_frame(self):
-        self.hue = self.hue + (1 / constants.FRAMES_PER_SECOND
-            / RAINBOW_HUE_TIME_TO_COMPLETE)
-        self.hue = self.hue % 1
-        color = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
-        color = util.unit_color_to_byte_color(color)
+        if self.color_generator is None:
+            self.hue = self.hue + (1 / constants.FRAMES_PER_SECOND
+                / RAINBOW_HUE_TIME_TO_COMPLETE)
+            self.hue = self.hue % 1
+            color = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
+            color = util.unit_color_to_byte_color(color)
+        else:
+            color = self.color_generator.get_color()
 
         for i in range(constants.LED_COUNT):
             self.frame[i][0] = color[0]
@@ -86,21 +107,32 @@ class RainbowHueRoutine:
 
         return self.frame
 
-SPURT_WIDTH = 75
+SPURT_WIDTH = 100
 class SpurtRoutine:
     def __init__(self):
         self.frame = np.zeros(shape=(constants.LED_COUNT, 3), dtype=int)
         self.spurts = list()
+        self.color_generator = None
 
     def add_spurt(self):
+        if self.color_generator is not None:
+            color = self.color_generator.get_color()
+        else:
+            color = util.unit_color_to_byte_color( \
+                colorsys.hsv_to_rgb( \
+                    random.uniform(0, 1), random.uniform(0.7, 1), 1.0))
+
         self.spurts.append(
             [
                 random.randint(0, constants.LED_COUNT),
                 1,
-                util.unit_color_to_byte_color(colorsys.hsv_to_rgb(random.uniform(0, 1), random.uniform(0.7, 1), 1.0)),
-                random.uniform(0.3, 0.8)
+                color,
+                random.uniform(0.6, 1.2)
             ]
         )
+
+    def apply_theme(self, color_generator):
+        self.color_generator = color_generator
 
     def clear(self):
         self.frame.fill(0)
@@ -126,7 +158,7 @@ class SpurtRoutine:
                 del self.spurts[spurt_index]
                 index_adjust += 1
 
-        if random.uniform(0, 1) > 0.95 and len(self.spurts) < 8:
+        if random.uniform(0, 1) > 0.95 and len(self.spurts) < 3:
             self.add_spurt()
 
         return self.frame
@@ -162,20 +194,17 @@ TDX_ROUTINE_WHITE_LEDS_END = 384
 class TdxRoutine:
     def __init__(self):
         self.frame = np.zeros(shape=(constants.LED_COUNT, 3), dtype=int)
+        self.apply_theme((0, 0, 255), (255, 255, 255), (51, 51, 51))
 
+    def apply_theme(self, color1, color2, color3):
         for i in range(constants.LED_COUNT):
-            if i <= TDX_ROUTINE_BLUE_LEDS_END:
-                self.frame[i][0] = 0
-                self.frame[i][1] = 0
-                self.frame[i][2] = 255
-            elif i <= TDX_ROUTINE_WHITE_LEDS_END:
-                self.frame[i][0] = 255
-                self.frame[i][1] = 255
-                self.frame[i][2] = 255
-            else:
-                self.frame[i][0] = 51
-                self.frame[i][1] = 51
-                self.frame[i][2] = 51
+            for j in range(3):
+                if i <= TDX_ROUTINE_BLUE_LEDS_END:
+                    self.frame[i][j] = color1[j]
+                elif i <= TDX_ROUTINE_WHITE_LEDS_END:
+                    self.frame[i][j] = color2[j]
+                else:
+                    self.frame[i][j] = color3[j]
 
     def get_frame(self):
         return self.frame

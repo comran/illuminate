@@ -14,18 +14,31 @@ class Library:
         self.routines = dict()
         self.transitions = dict()
 
+        self.active_routines = list()
+
         # Load in transitions.
         self.transitions["fade_transition"] = transitions.FadeTransition()
 
         # Load in dynamic routines.
-        self.routines["line_highlight"] = dynamic_routines.LineHighlightRoutine()
+        self.routines["line_highlight_routine"] = dynamic_routines.LineHighlightRoutine()
         self.routines["rainbow_hue_routine"] = dynamic_routines.RainbowHueRoutine()
         self.routines["line_highlight_rainbow_routine"] = dynamic_routines.LineHighlightRainbowRoutine()
         self.routines["spurt_routine"] = dynamic_routines.SpurtRoutine()
         self.routines[constants.DEFAULT_ROUTINE] = dynamic_routines.TdxRoutine()
 
+        self.dynamic_routines = list(self.routines.keys())
+
         # Load transitions from files.
         self.load_from_folder(constants.ROUTINES_FOLDER)
+
+    def get_all_routines(self):
+        return self.routines.keys()
+
+    def get_dynamic_routines(self):
+        return self.dynamic_routines
+
+    def set_active_routines(self, active_routines):
+        self.active_routines = active_routines
 
     def get_routine(self, routine_name):
         return self.routines[routine_name]
@@ -40,19 +53,19 @@ class Library:
 
     def get_nondefault_routines_list(self):
         nondefault_routines = list()
-        for item in self.routines.keys():
+        for item in self.active_routines:
             if item is not constants.DEFAULT_ROUTINE:
                 nondefault_routines.append(item)
 
         nondefault_routines.sort()
 
+        if len(nondefault_routines) == 0:
+            nondefault_routines.append(constants.DEFAULT_ROUTINE)
+
         return nondefault_routines
 
     def get_random_routine(self):
-        while True:
-            random_routine = random.choice(list(self.routines.keys()))
-            if random_routine != constants.DEFAULT_ROUTINE or len(self.routines.keys()) == 1:
-                break
+        random_routine = random.choice(self.get_nondefault_routines_list())
 
         return random_routine
 

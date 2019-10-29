@@ -12,18 +12,18 @@ LED_INVERT = False    # True to invert the signal (when using NPN level shift)
 LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 WINDOW_WIDTH = 1920
-CYCLE_TIME = 15
+CYCLE_TIME = 30
 
 MINUTES_IN_HOUR = 60
 HOURS_IN_DAY = 24
 DAYS_IN_WEEK = 7
 
 DIM_FADE_START_HOUR = 12 + 8
-DIM_FADE_END_HOUR = 12 + 11
+DIM_FADE_END_HOUR = 12 + 12
 DIM_MAX_BRIGHTNESS = 0.8
 
 if util.is_raspi():
-    DIM_MIN_BRIGHTNESS = 0.3
+    DIM_MIN_BRIGHTNESS = 0.4
 else:
     DIM_MIN_BRIGHTNESS = 1.0
 
@@ -32,16 +32,20 @@ DEFAULT_ROUTINE = "tdx_routine"
 ANIMATED_START_HOUR = 9
 ANIMATED_WEEKDAY_HOURS = (
     # Monday
-    22,
+    #22,
+    2,
 
     # Tuesday
-    22,
+    #22,
+    2,
 
     # Wednesday
-    22,
+    #22,
+    2,
 
     # Thursday
-    22,
+    #0,
+    2,
 
     # Friday
     2,
@@ -50,5 +54,6 @@ ANIMATED_WEEKDAY_HOURS = (
     2,
 
     # Sunday
-    0,
+    #0,
+    2
 )

@@ -28,7 +28,7 @@ class Filter:
             util.get_logger().debug("Brightness is currently " +
                 str(brightness) + " at " + str(now.hour) + ":" +
                 str("%02d" % now.minute))
-            
+
             self.last_logged_brightness = brightness
 
         frame = frame * brightness

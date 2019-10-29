@@ -8,9 +8,66 @@ import util
 import library
 import constants
 
+class HalloweenColorGenerator:
+    def __init__(self, random_choice=True):
+        self.colors = list()
+        self.colors.append((247, 95, 28))
+        self.colors.append((255, 154, 0))
+        self.colors.append((35, 35, 35))
+        self.colors.append((255, 255, 255))
+        self.colors.append((136, 30, 228))
+        self.colors.append((133, 226, 31))
+        self.last_color = self.get_random_color()
+        self.current_color = self.get_random_color()
+        self.fade = 0
+        self.random_choice = random_choice
+
+    def get_color(self):
+        if self.random_choice:
+            return random.choice(self.colors)
+        else:
+            if self.fade >= 1:
+                self.last_color = self.current_color
+                self.current_color = self.get_random_color()
+                self.fade = 0
+
+            self.fade += 1 / (4 * constants.FRAMES_PER_SECOND)
+
+            return self.mix_color(self.fade, self.last_color, self.current_color)
+
+    def get_random_color(self):
+        return random.choice(self.colors)
+
+    def mix_color(self, fade, color1, color2):
+        r = color1[0] * (1 - fade) + color2[0] * fade
+        g = color1[1] * (1 - fade) + color2[1] * fade
+        b = color1[2] * (1 - fade) + color2[2] * fade
+        return (r, g, b)
+
+
 class Player:
     def __init__(self):
         self.library = library.Library()
+
+        # Halloween theme.
+        now = datetime.datetime.now()
+
+        if now.month == 10 and (now.day > 27):
+            self.library.get_routine(constants.DEFAULT_ROUTINE).apply_theme( \
+                (247, 95, 28), (133, 226, 31), (255, 154, 0))
+            self.library.get_routine("spurt_routine").apply_theme(HalloweenColorGenerator())
+            self.library.get_routine("line_highlight_routine").apply_theme(HalloweenColorGenerator())
+            self.library.get_routine("rainbow_hue_routine").apply_theme(HalloweenColorGenerator(random_choice=False))
+            self.library.get_routine("line_highlight_rainbow_routine").apply_theme(HalloweenColorGenerator(random_choice=False))
+            active_routines = list()
+            active_routines.append(constants.DEFAULT_ROUTINE)
+            active_routines.append("spurt_routine")
+            active_routines.append("line_highlight_routine")
+            active_routines.append("rainbow_hue_routine")
+            active_routines.append("line_highlight_rainbow_routine")
+            self.library.set_active_routines(active_routines)
+        else:
+            self.library.set_active_routines(self.library.get_all_routines())
 
         self.routine_queue = queue.Queue()
         self.transitions_queue = queue.Queue()
@@ -29,8 +86,8 @@ class Player:
         now = datetime.datetime.now()
 
         clock_start = int(time.time()) - now.second
-        multiplier = int(now.second / 15)
-        return clock_start + 15 * (multiplier + 1)
+        multiplier = int(now.second / constants.CYCLE_TIME)
+        return clock_start + constants.CYCLE_TIME * (multiplier + 1)
 
 
     def get_next_routine(self):
@@ -86,8 +143,7 @@ class Player:
     def get_frame(self):
         if time.time() > self.next_transition_timestamp:
             self.start_transition()
-            self.next_transition_timestamp = self.get_next_transition_time()#time.time() + constants.CYCLE_TIME
-        print(self.next_transition_timestamp)
+            self.next_transition_timestamp = self.get_next_transition_time()
 
         frame = self.current_transition.process(
             self.previous_routine, self.current_routine)

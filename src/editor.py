@@ -20,20 +20,25 @@ miny = None
 maxx = None
 maxy = None
 
+
 class PixelLocationIndexed:
     def __init__(self, x, y, index):
         self.x = x
         self.y = y
         self.index = index
 
+
 def on_connect():
     print('connected.')
+
 
 def on_disconnect():
     print('disconnect')
 
+
 def on_reconnect():
     print('reconnect')
+
 
 def run_mapping(args):
     # Wait for connection to server.
@@ -54,7 +59,7 @@ def run_mapping(args):
     height = 0
     for line in csv_file:
         line_split = line.split(",")
-        width = max(width, len(line_split)) 
+        width = max(width, len(line_split))
         height += 1
 
     csv_file = open(args.csv)
@@ -103,7 +108,7 @@ def run_mapping(args):
                     int(pixel)))
             x += 1
         y = y + 1
-    
+
     pixel_locations.sort(key=operator.attrgetter('index'))
 
     i = 0
@@ -150,7 +155,6 @@ def run_routine(args):
     if miny > maxy or miny < 0:
         print("invalid y range: [" + str(miny) + ", " + str(maxy) + "]")
 
-
     def extraction(pixel_layout_data):
         global routine
 
@@ -159,7 +163,7 @@ def run_routine(args):
         pixel_layout = messages_pb2.PixelLayout()
         pixel_layout.ParseFromString(base64.b64decode(pixel_layout_data))
 
-        success,image = video.read()
+        success, image = video.read()
         count = 0
 
         while success:
@@ -179,12 +183,13 @@ def run_routine(args):
                 y = int(miny + (maxy - miny) * pixel_location.y)
 
                 color_tuple = image[y, x]
-                color = (color_tuple[0] << 16) + (color_tuple[1] << 8) + (color_tuple[2])
+                color = (color_tuple[0] << 16) + (color_tuple[1] << 8) + (
+                    color_tuple[2])
                 frame.pixel_colors.append(color)
 
             print('Read frame #', count)
             count += 1
-        
+
         data = base64.b64encode(routine.SerializeToString()).decode("ascii")
 
         i = 0
@@ -193,13 +198,14 @@ def run_routine(args):
             print("sending " + str(i))
             subdata = data[i:min(len(data), i + increment_size)]
             to_send = [i, subdata]
-    
+
             socket.emit("set_partial_routine", to_send)
             i += increment_size
             time.sleep(0.05)
 
         time.sleep(1)
-        socket.emit("set_routine", str(hashlib.md5(data.encode('utf-8')).hexdigest()))
+        socket.emit("set_routine",
+                    str(hashlib.md5(data.encode('utf-8')).hexdigest()))
 
     socket.emit("get_pixel_locations", "", extraction)
     print("Waiting for callback with pixel locations...")
@@ -208,7 +214,7 @@ def run_routine(args):
 
 if __name__ == '__main__':
     print("connecting...")
-    
+
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers()
     mapping_parser = subparser.add_parser('mapping')

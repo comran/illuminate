@@ -2,7 +2,8 @@
 # source: messages.proto
 
 import sys
-_b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+_b = sys.version_info[0] < 3 and (lambda x: x) or (
+    lambda x: x.encode('latin1'))
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -12,176 +13,237 @@ from google.protobuf import descriptor_pb2
 
 _sym_db = _symbol_database.Default()
 
-
-
-
 DESCRIPTOR = _descriptor.FileDescriptor(
-  name='messages.proto',
-  package='src',
-  syntax='proto2',
-  serialized_pb=_b('\n\x0emessages.proto\x12\x03src\"\x1d\n\x05\x46rame\x12\x14\n\x0cpixel_colors\x18\x01 \x03(\x05\"@\n\x07Routine\x12\x0b\n\x03\x66ps\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x1a\n\x06\x66rames\x18\x03 \x03(\x0b\x32\n.src.Frame\"%\n\rPixelLocation\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\"Y\n\x0bPixelLayout\x12\r\n\x05width\x18\x01 \x02(\x01\x12\x0e\n\x06height\x18\x02 \x02(\x01\x12+\n\x0fpixel_locations\x18\x03 \x03(\x0b\x32\x12.src.PixelLocation')
-)
+    name='messages.proto',
+    package='src',
+    syntax='proto2',
+    serialized_pb=_b(
+        '\n\x0emessages.proto\x12\x03src\"\x1d\n\x05\x46rame\x12\x14\n\x0cpixel_colors\x18\x01 \x03(\x05\"@\n\x07Routine\x12\x0b\n\x03\x66ps\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x1a\n\x06\x66rames\x18\x03 \x03(\x0b\x32\n.src.Frame\"%\n\rPixelLocation\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\"Y\n\x0bPixelLayout\x12\r\n\x05width\x18\x01 \x02(\x01\x12\x0e\n\x06height\x18\x02 \x02(\x01\x12+\n\x0fpixel_locations\x18\x03 \x03(\x0b\x32\x12.src.PixelLocation'
+    ))
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-
-
-
 _FRAME = _descriptor.Descriptor(
-  name='Frame',
-  full_name='src.Frame',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pixel_colors', full_name='src.Frame.pixel_colors', index=0,
-      number=1, type=5, cpp_type=1, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=23,
-  serialized_end=52,
+    name='Frame',
+    full_name='src.Frame',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='pixel_colors',
+            full_name='src.Frame.pixel_colors',
+            index=0,
+            number=1,
+            type=5,
+            cpp_type=1,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=23,
+    serialized_end=52,
 )
-
 
 _ROUTINE = _descriptor.Descriptor(
-  name='Routine',
-  full_name='src.Routine',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='fps', full_name='src.Routine.fps', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='name', full_name='src.Routine.name', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='frames', full_name='src.Routine.frames', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=54,
-  serialized_end=118,
+    name='Routine',
+    full_name='src.Routine',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='fps',
+            full_name='src.Routine.fps',
+            index=0,
+            number=1,
+            type=5,
+            cpp_type=1,
+            label=2,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+        _descriptor.FieldDescriptor(
+            name='name',
+            full_name='src.Routine.name',
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=_b("").decode('utf-8'),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+        _descriptor.FieldDescriptor(
+            name='frames',
+            full_name='src.Routine.frames',
+            index=2,
+            number=3,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=54,
+    serialized_end=118,
 )
-
 
 _PIXELLOCATION = _descriptor.Descriptor(
-  name='PixelLocation',
-  full_name='src.PixelLocation',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='src.PixelLocation.x', index=0,
-      number=1, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='src.PixelLocation.y', index=1,
-      number=2, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=120,
-  serialized_end=157,
+    name='PixelLocation',
+    full_name='src.PixelLocation',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='x',
+            full_name='src.PixelLocation.x',
+            index=0,
+            number=1,
+            type=1,
+            cpp_type=5,
+            label=2,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+        _descriptor.FieldDescriptor(
+            name='y',
+            full_name='src.PixelLocation.y',
+            index=1,
+            number=2,
+            type=1,
+            cpp_type=5,
+            label=2,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=120,
+    serialized_end=157,
 )
 
-
 _PIXELLAYOUT = _descriptor.Descriptor(
-  name='PixelLayout',
-  full_name='src.PixelLayout',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='width', full_name='src.PixelLayout.width', index=0,
-      number=1, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='height', full_name='src.PixelLayout.height', index=1,
-      number=2, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='pixel_locations', full_name='src.PixelLayout.pixel_locations', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=159,
-  serialized_end=248,
+    name='PixelLayout',
+    full_name='src.PixelLayout',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='width',
+            full_name='src.PixelLayout.width',
+            index=0,
+            number=1,
+            type=1,
+            cpp_type=5,
+            label=2,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+        _descriptor.FieldDescriptor(
+            name='height',
+            full_name='src.PixelLayout.height',
+            index=1,
+            number=2,
+            type=1,
+            cpp_type=5,
+            label=2,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+        _descriptor.FieldDescriptor(
+            name='pixel_locations',
+            full_name='src.PixelLayout.pixel_locations',
+            index=2,
+            number=3,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            options=None),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=159,
+    serialized_end=248,
 )
 
 _ROUTINE.fields_by_name['frames'].message_type = _FRAME
@@ -191,33 +253,44 @@ DESCRIPTOR.message_types_by_name['Routine'] = _ROUTINE
 DESCRIPTOR.message_types_by_name['PixelLocation'] = _PIXELLOCATION
 DESCRIPTOR.message_types_by_name['PixelLayout'] = _PIXELLAYOUT
 
-Frame = _reflection.GeneratedProtocolMessageType('Frame', (_message.Message,), dict(
-  DESCRIPTOR = _FRAME,
-  __module__ = 'messages_pb2'
-  # @@protoc_insertion_point(class_scope:src.Frame)
-  ))
+Frame = _reflection.GeneratedProtocolMessageType(
+    'Frame',
+    (_message.Message, ),
+    dict(
+        DESCRIPTOR=_FRAME,
+        __module__='messages_pb2'
+        # @@protoc_insertion_point(class_scope:src.Frame)
+    ))
 _sym_db.RegisterMessage(Frame)
 
-Routine = _reflection.GeneratedProtocolMessageType('Routine', (_message.Message,), dict(
-  DESCRIPTOR = _ROUTINE,
-  __module__ = 'messages_pb2'
-  # @@protoc_insertion_point(class_scope:src.Routine)
-  ))
+Routine = _reflection.GeneratedProtocolMessageType(
+    'Routine',
+    (_message.Message, ),
+    dict(
+        DESCRIPTOR=_ROUTINE,
+        __module__='messages_pb2'
+        # @@protoc_insertion_point(class_scope:src.Routine)
+    ))
 _sym_db.RegisterMessage(Routine)
 
-PixelLocation = _reflection.GeneratedProtocolMessageType('PixelLocation', (_message.Message,), dict(
-  DESCRIPTOR = _PIXELLOCATION,
-  __module__ = 'messages_pb2'
-  # @@protoc_insertion_point(class_scope:src.PixelLocation)
-  ))
+PixelLocation = _reflection.GeneratedProtocolMessageType(
+    'PixelLocation',
+    (_message.Message, ),
+    dict(
+        DESCRIPTOR=_PIXELLOCATION,
+        __module__='messages_pb2'
+        # @@protoc_insertion_point(class_scope:src.PixelLocation)
+    ))
 _sym_db.RegisterMessage(PixelLocation)
 
-PixelLayout = _reflection.GeneratedProtocolMessageType('PixelLayout', (_message.Message,), dict(
-  DESCRIPTOR = _PIXELLAYOUT,
-  __module__ = 'messages_pb2'
-  # @@protoc_insertion_point(class_scope:src.PixelLayout)
-  ))
+PixelLayout = _reflection.GeneratedProtocolMessageType(
+    'PixelLayout',
+    (_message.Message, ),
+    dict(
+        DESCRIPTOR=_PIXELLAYOUT,
+        __module__='messages_pb2'
+        # @@protoc_insertion_point(class_scope:src.PixelLayout)
+    ))
 _sym_db.RegisterMessage(PixelLayout)
-
 
 # @@protoc_insertion_point(module_scope)

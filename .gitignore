@@ -18,3 +18,10 @@ __pycache__
 *.pyo
 /src/python/messages_pb2.py
 *.log*
+/blender
+/editor
+/src/build
+/src/*.html
+/src/*.c
+/src/generators/rendered
+*.so

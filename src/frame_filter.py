@@ -3,6 +3,7 @@ import datetime
 import constants
 import util
 
+
 class Filter:
     def __init__(self):
         self.last_logged_brightness = -1
@@ -26,8 +27,8 @@ class Filter:
 
         if abs(brightness - self.last_logged_brightness) > 0.05:
             util.get_logger().debug("Brightness is currently " +
-                str(brightness) + " at " + str(now.hour) + ":" +
-                str("%02d" % now.minute))
+                                    str(brightness) + " at " + str(now.hour) +
+                                    ":" + str("%02d" % now.minute))
 
             self.last_logged_brightness = brightness
 

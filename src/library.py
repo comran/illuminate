@@ -1,13 +1,21 @@
-import constants
-import dynamic_routines
-import messages_pb2
-import transitions
-import util
-
 import os
 import base64
 import random
 import ntpath
+
+import constants
+import messages_pb2
+import util
+from generators.transitions.slide import SlideTransition
+from generators.transitions.fade import FadeTransition
+from generators.routines.barbershop import BarbershopRoutine
+from generators.routines.line_highlight import LineHighlightRoutine
+from generators.routines.line_highlight_rainbow import LineHighlightRainbowRoutine
+from generators.routines.protobuf import ProtobufRoutine
+from generators.routines.rainbow_hue import RainbowHueRoutine
+from generators.routines.spurt import SpurtRoutine
+from generators.routines.tdx import TdxRoutine
+
 
 class Library:
     def __init__(self):
@@ -17,19 +25,27 @@ class Library:
         self.active_routines = list()
 
         # Load in transitions.
-        self.transitions["fade_transition"] = transitions.FadeTransition()
+        self.transitions["fade_transition"] = FadeTransition()
+        self.transitions["slide_transition"] = SlideTransition()
+        self.transitions["flipped_slide_transition"] = SlideTransition(
+            flip=True)
 
         # Load in dynamic routines.
-        self.routines["line_highlight_routine"] = dynamic_routines.LineHighlightRoutine()
-        self.routines["rainbow_hue_routine"] = dynamic_routines.RainbowHueRoutine()
-        self.routines["line_highlight_rainbow_routine"] = dynamic_routines.LineHighlightRainbowRoutine()
-        self.routines["spurt_routine"] = dynamic_routines.SpurtRoutine()
-        self.routines[constants.DEFAULT_ROUTINE] = dynamic_routines.TdxRoutine()
+        # self.routines[
+        #     "line_highlight_routine"] = LineHighlightRoutine(
+        #     )
+        # self.routines[
+        #     "rainbow_hue_routine"] = RainbowHueRoutine()
+        # self.routines[
+        #     "line_highlight_rainbow_routine"] = LineHighlightRainbowRoutine()
+        self.routines["spurt_routine"] = SpurtRoutine()
+        # self.routines["barbershop_routine"] = BarbershopRoutine()
+        self.routines[constants.DEFAULT_ROUTINE] = TdxRoutine()
 
         self.dynamic_routines = list(self.routines.keys())
 
         # Load transitions from files.
-        self.load_from_folder(constants.ROUTINES_FOLDER)
+        # self.load_from_folder(constants.ROUTINES_FOLDER)
 
     def get_all_routines(self):
         return self.routines.keys()
@@ -110,11 +126,11 @@ class Library:
                     print("Error parsing protobuf: " + routine_filename)
                     continue
 
-                protobuf_routine = dynamic_routines.ProtobufRoutine()
+                protobuf_routine = ProtobufRoutine()
                 protobuf_routine.set_routine_protobuf(routine)
 
                 util.get_logger().debug("Opened file \"" + routine_filename +
-                    "\" with " + str(len(routine.frames)) +
-                    " frames with name " + routine_name)
+                                        "\" with " + str(len(routine.frames)) +
+                                        " frames with name " + routine_name)
 
                 self.routines[routine_name] = protobuf_routine
